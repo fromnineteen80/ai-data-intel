@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Intelligence Layer For The AI Transition</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #f5f4f0;
+    color: #1a1a18;
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  .pipeline { max-width: 1050px; margin: 0 auto; }
+  .page-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #888780;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .shared-danger {
+    border: 0.5px solid #f09595;
+    background: #fcebeb;
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .shared-neutral {
+    border: 0.5px solid #b4b2a9;
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: #ffffff;
+  }
+  .shared-secondary {
+    border: 0.5px solid #b4b2a9;
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: #f1efe8;
+    text-align: center;
+  }
+
+  .row-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+  .row-label-danger  { color: #a32d2d; }
+  .row-label-neutral { color: #5f5e5a; }
+  .row-label-muted   { color: #888780; }
+
+  .row-title { font-size: 13px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; line-height: 1.5; }
+  .row-desc  { font-size: 12px; color: #5f5e5a; line-height: 1.6; }
+
+  .issues-label {
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: .07em; color: #a32d2d; margin-top: 12px; margin-bottom: 6px;
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag        { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #d3d1c7; color: #444441; }
+  .tag-danger { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #f7c1c1; color: #791f1f; font-weight: 500; }
+  .tag-danger-outline { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #fcebeb; border: 0.5px solid #f09595; color: #a32d2d; }
+  .tag-outline { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #f9f8f4; box-shadow: inset 0 0 0 0.5px #b4b2a9; color: #5f5e5a; }
+
+  .arrow-down { text-align: center; color: #888780; padding: 8px 0; font-size: 18px; line-height: 1; }
+
+  .axis-h-label { font-size: 8.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #888780; line-height: 1.6; flex: 0 0 auto; white-space: nowrap; }
+  .axis-break { display: none; }
+  @media (max-width: 400px) {
+    .axis-h-label { white-space: normal !important; width: min-content !important; }
+    .axis-break { display: block; }
+  }
+
+  .spectrum-wide    { display: block; }
+  .spectrum-compact { display: none; }
+  .spectrum-compact-legend { display: none; }
+  @media (max-width: 820px) {
+    .spectrum-wide    { display: none; }
+    .spectrum-compact { display: grid; }
+    .spectrum-compact-legend { display: flex; }
+  }
+  @media (max-width: 700px) {
+    .opp-grid          { grid-template-columns: 1fr !important; }
+    .stack-bottom-grid { grid-template-columns: 1fr !important; }
+    .prec-grid         { grid-template-columns: 1fr 22px 1fr !important; row-gap: 10px !important; align-items: stretch !important; }
+    .prec-grid > *:nth-child(4) { display: none !important; }
+    .prec-arrow        { display: flex; align-items: center; justify-content: center; }
+  }
+
+  .divider-row { display: flex; align-items: center; gap: 8px; margin: 12px 0 10px; }
+  .divider-line  { flex: 1; height: 0.5px; background: #b4b2a9; }
+  .divider-label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: #888780; font-weight: 500; white-space: nowrap; }
+
+  .stack-grid        { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .stack-divider     { height: 0.5px; background: #e8e6df; margin: 12px 0; }
+  .stack-bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .stack-item-title { font-size: 12px; font-weight: 500; color: #1a1a18; margin-bottom: 3px; }
+  .stack-item-desc  { font-size: 11px; color: #5f5e5a; }
+
+  .sub-card              { border-radius: 8px; padding: 12px; background: #f9f8f4; border: 0.5px solid #d3d1c7; }
+  .sub-card-stakeholder  { border-left: 3px solid #b4b2a9; }
+  .sub-card-thought      { border-left: 3px solid #b4b2a9; }
+  .sub-card-title        { font-size: 12px; font-weight: 500; color: #1a1a18; margin-bottom: 6px; }
+  .sub-card-body         { font-size: 11px; color: #5f5e5a; line-height: 1.6; font-style: italic; }
+  .sub-card-body-normal  { font-size: 11px; color: #5f5e5a; line-height: 1.6; }
+
+  .col-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+
+  .track-header      { border-radius: 8px; padding: 9px 12px; text-align: center; }
+  .track-header-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+  .track-header-sub  { font-size: 11px; margin-top: 2px; opacity: 0.85; }
+
+  .header-venture { background: #e6f1fb; color: #185fa5; }
+  .header-shared  { background: #faeeda; color: #854f0b; }
+  .header-hp      { background: #eaf3de; color: #3b6d11; }
+
+  .col-card          { border-radius: 12px; padding: 12px; background: #ffffff; }
+  .col-card-venture  { border: 0.5px solid #85b7eb; }
+  .col-card-shared   { border: 0.5px solid #ef9f27; }
+  .col-card-hp       { border: 0.5px solid #97c459; }
+  .col-card-firewall { border: 0.5px solid #b4b2a9; background: #f1efe8; }
+
+  .col-section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .label-venture  { color: #185fa5; }
+  .label-shared   { color: #854f0b; }
+  .label-hp       { color: #3b6d11; }
+  .label-firewall { color: #5f5e5a; }
+
+  .product-list { display: flex; flex-direction: column; gap: 5px; }
+  .product-tag     { font-size: 11px; padding: 4px 8px; border-radius: 4px; }
+  .product-venture { background: #e6f1fb; color: #185fa5; }
+  .product-shared  { background: #faeeda; color: #854f0b; }
+  .product-hp      { background: #eaf3de; color: #3b6d11; }
+
+  .value-list { display: flex; flex-direction: column; gap: 6px; }
+  .value-item       { font-size: 11px; color: #5f5e5a; padding-left: 8px; line-height: 1.4; }
+  .border-venture   { border-left: 2px solid #85b7eb; }
+  .border-shared    { border-left: 2px solid #ef9f27; }
+  .border-hp        { border-left: 2px solid #97c459; }
+  .border-firewall  { border-left: 2px solid #b4b2a9; }
+
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opp-card {
+    border: 0.5px solid #b4b2a9;
+    border-radius: 12px;
+    padding: 16px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opp-icon-wrap {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: #f1efe8; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .material-symbols-outlined { font-size: 20px; color: #444441; user-select: none; }
+  .opp-title { font-size: 13px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .opp-desc  { font-size: 11px; color: #5f5e5a; line-height: 1.6; }
+
+  .shared-precedent {
+    border: 0.5px solid #f09595;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .prec-grid {
+    display: grid;
+    grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr;
+    align-items: center;
+  }
+  .prec-card          { border: 0.5px solid #d3d1c7; border-radius: 8px; padding: 10px 12px; background: #f9f8f4; }
+  .prec-card-ai       { background: #f0f5fb; border-color: #b5d4f4; }
+  .prec-card-gap      { background: #fdf6e8; border-color: #ef9f27; border-width: 1px; }
+  .prec-arrow         { text-align: center; color: #b4b2a9; font-size: 16px; }
+  .prec-title         { font-size: 11px; font-weight: 500; color: #1a1a18; margin-bottom: 3px; }
+  .prec-desc          { font-size: 11px; color: #5f5e5a; line-height: 1.5; }
+  .prec-track-label   { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+  .prec-track-fracking { color: #5f5e5a; }
+  .prec-track-ai      { color: #5f5e5a; }
+  .prec-sep           { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+  .prec-sep-line      { flex: 1; height: 0.5px; background: #e8e6df; }
+  .prec-sep-label     { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: #b4b2a9; font-weight: 500; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="pipeline">
+
+  <div class="page-title">Data Intelligence Layer For The AI Transition · Main Ideas</div>
+
+  <!-- PROBLEM -->
+  <div class="shared-danger">
+    <div class="row-label row-label-danger">The problem</div>
+    <div class="row-title">The AI transition will impact communities, customers, and voters more profoundly than anything in our lifetimes</div>
+    <div class="row-desc">We are barreling toward that future without ever combining sentiment modeling, polling, grassroots engagement, and thought leadership in ways that can drive meaningful solutions. AI adoption, workforce displacement, and regulatory change are generating multi-billion dollar decisions with no real-time read on how Americans are experiencing them. The early terrain of energy costs, data centers, and privacy will resolve. What follows is what nobody is prepared for.</div>
+    <div class="issues-label">Issues at stake</div>
+    <div class="tag-row">
+      <span class="tag-danger">Business transition</span>
+      <span class="tag-danger">AI adoption</span>
+      <span class="tag-danger">The agentic shift</span>
+      <span class="tag-danger">License to operate</span>
+      <span class="tag-danger-outline">Jobs and workforce</span>
+      <span class="tag-danger-outline">Skills training</span>
+      <span class="tag-danger-outline">K-12 education</span>
+      <span class="tag-danger-outline">Higher education</span>
+      <span class="tag-danger-outline">Manufacturing</span>
+      <span class="tag-danger-outline">Health care</span>
+      <span class="tag-danger-outline">Life sciences</span>
+      <span class="tag-danger-outline">Housing</span>
+      <span class="tag-danger-outline">Financial services</span>
+      <span class="tag-danger-outline">Retail and small business</span>
+      <span class="tag-danger-outline">Transportation and logistics</span>
+      <span class="tag-danger-outline">Agriculture</span>
+      <span class="tag-danger-outline">Legal and professional services</span>
+      <span class="tag-danger-outline">Media and creative industries</span>
+      <span class="tag-danger-outline">Criminal justice</span>
+      <span class="tag-danger-outline">National security</span>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- HISTORICAL PRECEDENT -->
+  <div class="shared-precedent">
+    <div class="row-label row-label-danger" style="margin-bottom: 12px;">Historical precedent</div>
+
+    <div class="prec-track-label prec-track-fracking">The fracking wars</div>
+    <div class="prec-grid">
+      <div class="prec-card">
+        <div class="prec-title">Early opposition</div>
+        <div class="prec-desc">Water contamination fears, earthquake risk, and pipeline resistance mobilize communities.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card">
+        <div class="prec-title">Intelligence deployed</div>
+        <div class="prec-desc">Sentiment and modeling infrastructure identified where opposition was forming, where it was moveable, and where opportunities existed.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card">
+        <div class="prec-title">License to operate</div>
+        <div class="prec-desc">Natural gas changed what was politically possible. Industry knew how to engage with intelligence and modeling. The terrain shifted under the opposition.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card">
+        <div class="prec-title">American energy dominance</div>
+        <div class="prec-desc">Companies with better intelligence and engagement maintained their license to operate. Shared value created for industry, communities, and consumers alike.</div>
+      </div>
+    </div>
+
+    <div class="prec-sep" style="margin: 14px 0;">
+      <div class="prec-sep-line"></div>
+      <div class="prec-sep-label">same structural pattern</div>
+      <div class="prec-sep-line"></div>
+    </div>
+
+    <div class="prec-track-label prec-track-ai" style="margin-top: 14px;">The AI transition</div>
+    <div class="prec-grid">
+      <div class="prec-card prec-card-ai">
+        <div class="prec-title">Early opposition</div>
+        <div class="prec-desc">Data center siting, energy costs, privacy exposure, algorithmic accountability.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card prec-card-gap">
+        <div class="prec-title">Intelligence gap</div>
+        <div class="prec-desc">No longitudinal, decision-grade infrastructure exists. Sentiment, polling, grassroots, and thought leadership have never been combined at this scale.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card prec-card-ai">
+        <div class="prec-title">License to operate</div>
+        <div class="prec-desc">Capital deployed too large. National interest too clear. The juice will get squeezed. The transition happens on American terms regardless of the current fights.</div>
+      </div>
+      <div class="prec-arrow">→</div>
+      <div class="prec-card prec-card-ai">
+        <div class="prec-title">America wins the AI race</div>
+        <div class="prec-desc">This is where the real shift happens. Workforce, economy, opportunity, and everyday American life are reorganized at a speed and scale no institution is prepared for.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- ASSET -->
+  <div class="shared-neutral">
+    <div class="row-label row-label-neutral">The asset: proprietary data lake</div>
+    <div class="row-title">Tunnl infrastructure + 20 tier-one licensed datasets</div>
+    <div class="row-desc">Experian · Equifax · Lightcast · JPMorgan Chase Institute · Mastercard SpendingPulse · Nielsen · Numerator · Revelio Labs · CoreLogic · ESRI · Zillow Research · Comscore · Komodo Health + more · Polling and surveying</div>
+    <div class="tag-row" style="margin-top: 8px;">
+      <span class="tag-outline">Longitudinal time-series</span>
+      <span class="tag-outline">Cohort-resolved</span>
+      <span class="tag-outline">Economic exposure linkage</span>
+      <span class="tag-outline">Compounds every cycle</span>
+      <span class="tag-outline">Switching costs rise structurally</span>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- MODELING STACK -->
+  <div class="shared-neutral">
+    <div class="row-label row-label-neutral" style="margin-bottom: 10px;">The modeling stack</div>
+    <div class="stack-grid">
+      <div>
+        <div class="stack-item-title">Deep sentiment modeling</div>
+        <div class="stack-item-desc">Longitudinal tracking across cohorts, geographies, and income bands</div>
+      </div>
+      <div>
+        <div class="stack-item-title">Stakeholder mapping</div>
+        <div class="stack-item-desc">Scored, dynamic, tracks movement and formation over time</div>
+      </div>
+      <div>
+        <div class="stack-item-title">Economic exposure fusion</div>
+        <div class="stack-item-desc">Workforce risk, income, geography, and policy environment</div>
+      </div>
+    </div>
+    <div class="stack-divider"></div>
+    <div class="stack-bottom-grid">
+      <div class="sub-card sub-card-stakeholder">
+        <div class="sub-card-title">The Public Square</div>
+        <div class="sub-card-body-normal">Stakeholders, customers, and voters exist in a public square where ideas are exchanged, credibility is won or lost, and value is created, shared, or squandered. The stakeholder management system maps actors by sentiment, economic exposure, policy position, and movement over time. Know who is moveable before you walk into the room.</div>
+      </div>
+      <div class="sub-card sub-card-thought">
+        <div class="sub-card-title">Thought Leadership</div>
+        <div class="sub-card-body-normal">Cities, institutions, and policymakers that define the measurement standard for AI transition own the terms of the conversation. Longitudinal indices and policy briefs ground the debate in lived American experience. The platform clients help shape is the frame others respond to. That is the foundation of license to operate.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 12px 0 10px; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 0;">
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+      <div style="font-size: 14px; color: #888780; line-height: 1; padding: 0 6px; background: #f5f4f0;">↓</div>
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0;">
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: #888780; font-weight: 500; white-space: nowrap; padding: 0 8px; background: #f5f4f0;">branches into two tracks</div>
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0;">
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+      <div style="font-size: 14px; color: #888780; line-height: 1; padding: 0 6px; background: #f5f4f0;">↓</div>
+      <div style="flex: 1; height: 0.5px; background: #b4b2a9;"></div>
+    </div>
+  </div>
+
+  <!-- TRACK HEADERS -->
+  <div class="col-grid">
+    <div class="track-header header-venture" style="display: flex; align-items: center; gap: 8px; text-align: left;">
+      <span class="material-symbols-outlined" style="font-size: 22px; color: #185fa5; flex-shrink: 0;">bolt</span>
+      <div>
+        <div class="track-header-label">Venture track</div>
+        <div class="track-header-sub">Independent ownership entity</div>
+      </div>
+    </div>
+    <div class="track-header header-shared">
+      <div class="track-header-label">Shared platform</div>
+      <div class="track-header-sub">Both tracks benefit</div>
+    </div>
+    <div class="track-header header-hp" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px; text-align: right;">
+      <div>
+        <div class="track-header-label">Corporate track</div>
+        <div class="track-header-sub">HP as example client</div>
+      </div>
+      <span class="material-symbols-outlined" style="font-size: 22px; color: #3b6d11; flex-shrink: 0;">computer</span>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="col-grid">
+    <div class="col-card col-card-venture">
+      <div class="col-section-label label-venture">Products</div>
+      <div class="product-list">
+        <div class="product-tag product-venture">Enterprise subscriptions</div>
+        <div class="product-tag product-venture">Government licensing</div>
+        <div class="product-tag product-venture">API and data licensing</div>
+        <div class="product-tag product-venture">AI training data licensing</div>
+        <div class="product-tag product-venture">Equity vehicle</div>
+      </div>
+    </div>
+    <div class="col-card col-card-shared">
+      <div class="col-section-label label-shared" style="text-align: center;">Products</div>
+      <div class="product-list" style="text-align: center;">
+        <div class="product-tag product-shared">Stakeholder management system</div>
+        <div class="product-tag product-shared">Sentiment modeling platform</div>
+        <div class="product-tag product-shared">AI Democracy Institute</div>
+        <div class="product-tag product-shared">Consortium scorecards</div>
+        <div class="product-tag product-shared">PAC intelligence layer</div>
+        <div class="product-tag product-shared">American AI Forum</div>
+      </div>
+    </div>
+    <div class="col-card col-card-hp">
+      <div class="col-section-label label-hp" style="text-align: right;">Products</div>
+      <div class="product-list" style="text-align: right;">
+        <div class="product-tag product-hp">Govt affairs intelligence</div>
+        <div class="product-tag product-hp">Public sector sales tools</div>
+        <div class="product-tag product-hp">Executive decision support</div>
+        <div class="product-tag product-hp">Policymaker relationship tools</div>
+        <div class="product-tag product-hp">Empowering advocacy</div>
+        <div class="product-tag product-hp">Consortium delivery: CTA and NAM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUE -->
+  <div class="col-grid">
+    <div class="col-card col-card-venture">
+      <div class="col-section-label label-venture">Investor value</div>
+      <div class="value-list">
+        <div class="value-item border-venture">Recurring subscription and licensing revenue</div>
+        <div class="value-item border-venture">Compounding data asset with rising switching costs</div>
+        <div class="value-item border-venture">AI training data licensing creates a direct revenue channel with large model developers seeking structured ground truth</div>
+        <div class="value-item border-venture">Compelling acquisition target for major data, media, and policy platforms</div>
+        <div class="value-item border-venture">Fortune 100 anchor validates market from day one</div>
+      </div>
+    </div>
+    <div class="col-card col-card-shared">
+      <div class="col-section-label label-shared">Structural power</div>
+      <div class="value-list">
+        <div class="value-item border-shared">Sets the measurement standard others operate against</div>
+        <div class="value-item border-shared">Owns the American AI transition thought leadership frame</div>
+        <div class="value-item border-shared">Shapes policy environment before sentiment hardens</div>
+        <div class="value-item border-shared">Self-reinforcing force as platform scales</div>
+      </div>
+    </div>
+    <div class="col-card col-card-hp">
+      <div class="col-section-label label-hp">HP value</div>
+      <div class="value-list">
+        <div class="value-item border-hp">Sales advantage no competitor can replicate</div>
+        <div class="value-item border-hp">Forward-looking risk and opportunity intelligence</div>
+        <div class="value-item border-hp">Thought leadership and community engagement tools that position HP as a strategic partner to government, not just a vendor</div>
+        <div class="value-item border-hp">Preferred client terms post-incubation</div>
+        <div class="value-item border-hp">Advocacy tools that extend reach and impact far beyond trade association dependence and diluted ROI</div>
+        <div class="value-item border-hp">No ownership risk, no governance obligation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-row">
+    <div class="divider-line"></div>
+    <div class="divider-label">legal and ownership architecture</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- LEGAL -->
+  <div class="col-grid">
+    <div class="col-card col-card-venture">
+      <div class="col-section-label label-venture">Venture entity</div>
+      <div class="value-list">
+        <div class="value-item border-venture">Formed before incubation agreement is signed</div>
+        <div class="value-item border-venture">Founders hold equity and ownership from day one</div>
+        <div class="value-item border-venture">Anti-dilution provisions through initial funding rounds</div>
+        <div class="value-item border-venture">No HP money, IP, or systems touch venture entity</div>
+        <div class="value-item border-venture">Outside counsel governs venture structure separately</div>
+      </div>
+    </div>
+    <div class="col-card col-card-shared">
+      <div class="col-section-label label-shared">The firewall</div>
+      <div class="value-list">
+        <div class="value-item border-shared">Ownership disclosed to HP upfront and documented</div>
+        <div class="value-item border-shared">HP data categorically excluded from the data lake</div>
+        <div class="value-item border-shared">Structural and contractual; two environments do not intersect</div>
+        <div class="value-item border-shared">Services and licensing agreement is the entire scope</div>
+        <div class="value-item border-shared">Outside counsel reviews both sides independently</div>
+      </div>
+    </div>
+    <div class="col-card col-card-hp">
+      <div class="col-section-label label-hp">HP legal position</div>
+      <div class="value-list">
+        <div class="value-item border-hp">Client only: not investor, not owner, not governor</div>
+        <div class="value-item border-hp">No board seat, no fiduciary obligation, zero liability</div>
+        <div class="value-item border-hp">Time-bounded incubation with defined sunset terms</div>
+        <div class="value-item border-hp">Post-incubation: preferred client on commercial terms</div>
+        <div class="value-item border-hp">Clean answer for govt procurement: independent vendor</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- OUTCOME -->
+  <div class="shared-secondary">
+    <div class="row-label row-label-muted">The outcome</div>
+    <div class="row-title">The research and sentiment stack for America's AI economic and policy transition</div>
+    <div class="row-desc" style="margin-top: 4px;">First to own the complete structured sentiment infrastructure layer. The data standard that government, enterprise, and trade associations depend on for decision making and strategy. Use cases enhance positioning, sales, policy, executive leadership, and engagement at every phase of execution. Our platform compounds with every cycle it runs and becomes harder to displace the longer it operates.</div>
+  </div>
+
+  <div class="divider-row">
+    <div class="divider-line"></div>
+    <div class="divider-label">opportunities</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- OPPORTUNITIES -->
+  <div class="opp-grid">
+
+    <div class="opp-card">
+      <div class="opp-icon-wrap">
+        <span class="material-symbols-outlined">assignment</span>
+      </div>
+      <div>
+        <div class="opp-title">Operating In The Transition</div>
+        <div class="opp-desc">Companies and institutions navigating AI transition need decision-grade intelligence on where risk, resistance, and opportunity are forming before they appear in headlines. This platform delivers operational clarity while others are still reacting to a reality already in motion.</div>
+      </div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-icon-wrap">
+        <span class="material-symbols-outlined">lightbulb</span>
+      </div>
+      <div>
+        <div class="opp-title">Capitalizing On Sentiment</div>
+        <div class="opp-desc">Longitudinal sentiment data tied to real economic exposure turns public reaction into a predictable asset. Organizations that own the read on how transition is being experienced make better decisions, better bets, and better arguments at every stage of the transition.</div>
+      </div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-icon-wrap">
+        <span class="material-symbols-outlined">account_balance</span>
+      </div>
+      <div>
+        <div class="opp-title">AI Democracy Institute</div>
+        <div class="opp-desc">An independently branded institute publishing longitudinal indices, policy briefs, and public reporting on how AI and economic transition are being experienced nationally. Sets the measurement standard the policy debate operates against and anchors the American frame for this conversation in data rather than abstraction.</div>
+      </div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-icon-wrap">
+        <span class="material-symbols-outlined">how_to_vote</span>
+      </div>
+      <div>
+        <div class="opp-title">Political Action</div>
+        <div class="opp-desc">PAC strategy and campaign intelligence grounded in cohort-level sentiment data and economic exposure modeling. Decision-grade analysis that identifies where persuasion is possible, where opinion is hardening, and where the political terrain is moveable before resources are committed.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider-row">
+    <div class="divider-line"></div>
+    <div class="divider-label">stakeholder mapping</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="spectrum-wide">
+
+  <!-- 14 spectrum cards -->
+  <div style="display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; margin-bottom: 8px;">
+
+    <!-- Darker red: Proactively Defend, Defend -->
+    <div style="border: 0.5px solid #7a1e1e; border-radius: 8px; padding: 6px 4px; background: #ef8f8f; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #7a1e1e; line-height: 1.3; text-align: center;">Actively Defend Against</div>
+    </div>
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 6px 4px; background: #efb8b8; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Defend Against</div>
+    </div>
+
+    <!-- Lighter red: Protect, Respond -->
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 6px 4px; background: #efb8b8; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Protect Brand</div>
+    </div>
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 6px 4px; background: #f4dcdc; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Respond To</div>
+    </div>
+
+    <!-- Orange: Identify, Monitor, Maintain -->
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 6px 4px; background: #f4dcdc; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Identify</div>
+    </div>
+    <div style="border: 0.5px solid #ecbf73; border: 0.5px solid #ecbf73; border-radius: 8px; padding: 6px 4px; background: #faeeda; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #633806; line-height: 1.3; text-align: center;">Monitor</div>
+    </div>
+    <div style="border: 0.5px solid #ecbf73; border: 0.5px solid #ecbf73; border-radius: 8px; padding: 6px 4px; background: #faeeda; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #633806; line-height: 1.3; text-align: center;">Maintain</div>
+    </div>
+
+    <!-- Yellow: Connect, Commit, Cooperate -->
+    <div style="border: 0.5px solid #f7d07a; border: 0.5px solid #f7d07a; border-radius: 8px; padding: 6px 4px; background: #fef9ee; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #854f0b; line-height: 1.3; text-align: center;">Connect</div>
+    </div>
+    <div style="border: 0.5px solid #f7d07a; border: 0.5px solid #f7d07a; border-radius: 8px; padding: 6px 4px; background: #fef9ee; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #854f0b; line-height: 1.3; text-align: center;">Commit</div>
+    </div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 6px 4px; background: #ddead2; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Cooperate</div>
+    </div>
+
+    <!-- Light green: Collaborate, Valuable Relationship -->
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 6px 4px; background: #ddead2; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Collaborate With</div>
+    </div>
+    <div style="border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border-radius: 8px; padding: 6px 4px; background: #bddca3; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #2a5010; line-height: 1.3; text-align: center;">Valuable Partner</div>
+    </div>
+
+    <!-- Darker green: High Value Relationship, Strategic Partnership -->
+    <div style="border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border-radius: 8px; padding: 6px 4px; background: #bddca3; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #2a5010; line-height: 1.3; text-align: center;">High Value Partner</div>
+    </div>
+    <div style="border: 0.5px solid #173404; border: 0.5px solid #173404; border-radius: 8px; padding: 6px 4px; background: #9cd46e; display: flex; align-items: center; justify-content: center;">
+      <div style="font-size: 10px; font-weight: 500; color: #173404; line-height: 1.3; text-align: center;">Strategic Partner</div>
+    </div>
+
+  </div>
+
+  <!-- Three content cards -->
+  <div style="display: grid; grid-template-columns: 4fr 6fr 4fr; gap: 8px;">
+
+    <div class="col-card" style="border: 0.5px solid #f09595;">
+      <div class="col-section-label label-danger" style="color: #a32d2d; margin-bottom: 8px;">Negative Impact On Brand</div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 11px; color: #5f5e5a; padding-left: 8px; border-left: 2px solid #f09595; line-height: 1.4;">Defend license to operate</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-left: 8px; border-left: 2px solid #f09595; line-height: 1.4;">Challenge misinformation</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-left: 8px; border-left: 2px solid #f09595; line-height: 1.4;">Plan for their influence in community</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-left: 8px; border-left: 2px solid #f09595; line-height: 1.4;">Identify their reputation with audiences</div>
+      </div>
+      <div style="font-size: 11px; font-weight: 500; color: #a32d2d; margin-top: 14px; letter-spacing: .04em;">"INFLUENCER"</div>
+    </div>
+
+    <div class="col-card" style="border: 0.5px solid #ef9f27; text-align: center;">
+      <div class="col-section-label" style="color: #1a1a18; margin-bottom: 8px;">The Winnable Middle</div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 11px; color: #5f5e5a; line-height: 1.4;">Dispel myths and misperceptions</div>
+        <div style="font-size: 11px; color: #5f5e5a; line-height: 1.4;">Appeal to their priorities</div>
+        <div style="font-size: 11px; color: #5f5e5a; line-height: 1.4;">Identify shared value to move them our way</div>
+        <div style="font-size: 11px; color: #5f5e5a; line-height: 1.4;">Invest in relationship where possible</div>
+        <div style="font-size: 11px; color: #5f5e5a; line-height: 1.4;">Identify our reputation with them</div>
+      </div>
+    </div>
+
+    <div class="col-card" style="border: 0.5px solid #97c459; text-align: right;">
+      <div class="col-section-label" style="color: #3b6d11; margin-bottom: 8px;">Positive Impact On Brand</div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 11px; color: #5f5e5a; padding-right: 8px; border-right: 2px solid #97c459; line-height: 1.4;">Maximize shared value</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-right: 8px; border-right: 2px solid #97c459; line-height: 1.4;">Maintain relationship</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-right: 8px; border-right: 2px solid #97c459; line-height: 1.4;">Champion their cause</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-right: 8px; border-right: 2px solid #97c459; line-height: 1.4;">Recruit as public surrogates</div>
+        <div style="font-size: 11px; color: #5f5e5a; padding-right: 8px; border-right: 2px solid #97c459; line-height: 1.4;">Communicate often</div>
+      </div>
+      <div style="font-size: 11px; font-weight: 500; color: #3b6d11; margin-top: 14px; letter-spacing: .04em;">"INFLUENCER"</div>
+    </div>
+
+  </div>
+
+  </div>
+
+  <!-- COMPACT STAKEHOLDER MAP: shown when page is narrow -->
+  <div class="spectrum-compact" style="grid-template-columns: minmax(0,1fr) minmax(0,1fr) 10px minmax(0,1fr) minmax(0,1fr); gap: 5px;">
+
+    <!-- Row 1: highest influence -->
+    <div style="border: 0.5px solid #7a1e1e; border-radius: 8px; padding: 10px 6px; background: #ee9090; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #7a1e1e; line-height: 1.3; text-align: center;">Actively Defend Against</div>
+    </div>
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 10px 6px; background: #efb8b8; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Defend Against</div>
+    </div>
+    <div style="position: relative;">
+      <div style="position: absolute; left: 50%; top: 13px; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div>
+      <div style="position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #1a1a18; white-space: nowrap; line-height: 1;">10</div>
+    </div>
+    <div style="border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border-radius: 8px; padding: 10px 6px; background: #bddca3; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #2a5010; line-height: 1.3; text-align: center;">Valuable Partner</div>
+    </div>
+    <div style="border: 0.5px solid #173404; border: 0.5px solid #173404; border: 0.5px solid #173404; border-radius: 8px; padding: 10px 6px; background: #9cd46e; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #173404; line-height: 1.3; text-align: center;">Strategic Partner</div>
+    </div>
+
+    <!-- Row 2 -->
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 10px 6px; background: #efb8b8; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Defend Against</div>
+    </div>
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 10px 6px; background: #efb8b8; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Protect Brand</div>
+    </div>
+    <div style="position: relative;"><div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div></div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 10px 6px; background: #ddead2; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Collaborate With</div>
+    </div>
+    <div style="border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border: 0.5px solid #9cd46e; border-radius: 8px; padding: 10px 6px; background: #bddca3; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #2a5010; line-height: 1.3; text-align: center;">High Value Partner</div>
+    </div>
+
+    <!-- Row 3 -->
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 10px 6px; background: #efb8b8; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Protect Brand</div>
+    </div>
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 10px 6px; background: #f4dcdc; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Respond To</div>
+    </div>
+    <div style="position: relative;"><div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div></div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 10px 6px; background: #ddead2; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Cooperate</div>
+    </div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 10px 6px; background: #ddead2; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Collaborate With</div>
+    </div>
+
+    <!-- Horizontal axis row -->
+    <div style="height: 10px; position: relative;">
+      <div style="position: absolute; top: 50%; left: 22px; right: 0; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div>
+      <div style="position: absolute; left: 2px; top: 50%; transform: translateY(-50%); font-size: 9px; color: #1a1a18; white-space: nowrap; line-height: 1;">-10</div>
+    </div>
+    <div style="height: 10px; position: relative;"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div></div>
+    <div style="height: 10px; position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="position: absolute; top: 50%; left: 0; right: 0; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div>
+      <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div>
+      <div style="position: relative; z-index: 1; font-size: 8px; color: #1a1a18; background: #f5f4f0; padding: 0 1px; white-space: nowrap; line-height: 1;">0,0</div>
+    </div>
+    <div style="height: 10px; position: relative;"><div style="position: absolute; top: 50%; left: 0; right: 0; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div></div>
+    <div style="height: 10px; position: relative;">
+      <div style="position: absolute; top: 50%; left: 0; right: 22px; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div>
+      <div style="position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font-size: 9px; color: #1a1a18; white-space: nowrap; line-height: 1;">10</div>
+    </div>
+
+    <!-- Row 4 -->
+    <div style="border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border: 0.5px solid #ef8f8f; border-radius: 8px; padding: 10px 6px; background: #efb8b8; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #a83030; line-height: 1.3; text-align: center;">Protect Brand</div>
+    </div>
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 10px 6px; background: #f4dcdc; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Respond To</div>
+    </div>
+    <div style="position: relative;"><div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div></div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 10px 6px; background: #ddead2; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Cooperate</div>
+    </div>
+    <div style="border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border: 0.5px solid #bddca3; border-radius: 8px; padding: 10px 6px; background: #ddead2; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #3b6d11; line-height: 1.3; text-align: center;">Collaborate With</div>
+    </div>
+
+    <!-- Row 5 -->
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 10px 6px; background: #f4dcdc; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Identify</div>
+    </div>
+    <div style="border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border: 0.5px solid #efb8b8; border-radius: 8px; padding: 10px 6px; background: #f4dcdc; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #c04848; line-height: 1.3; text-align: center;">Identify</div>
+    </div>
+    <div style="position: relative;"><div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div></div>
+    <div style="border: 0.5px solid #f7d07a; border: 0.5px solid #f7ce76; border: 0.5px solid #f7d07a; border-radius: 8px; padding: 10px 6px; background: #fef9ee; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #854f0b; line-height: 1.3; text-align: center;">Commit</div>
+    </div>
+    <div style="border: 0.5px solid #f7d07a; border: 0.5px solid #f7ce76; border: 0.5px solid #f7d07a; border-radius: 8px; padding: 10px 6px; background: #fef9ee; display: flex; align-items: center; justify-content: center; min-height: 64px;">
+      <div style="font-size: 10px; font-weight: 500; color: #854f0b; line-height: 1.3; text-align: center;">Commit</div>
+    </div>
+
+    <!-- Row 6: lowest influence -->
+    <div style="border: 0.5px solid #ecbf73; border: 0.5px solid #ebba6a; border: 0.5px solid #ecbf73; border-radius: 8px; padding: 10px 6px; background: #faeeda; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #633806; line-height: 1.3; text-align: center;">Monitor</div>
+    </div>
+    <div style="border: 0.5px solid #ecbf73; border: 0.5px solid #ebba6a; border: 0.5px solid #ecbf73; border-radius: 8px; padding: 10px 6px; background: #faeeda; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #633806; line-height: 1.3; text-align: center;">Monitor</div>
+    </div>
+    <div style="position: relative;">
+      <div style="position: absolute; left: 50%; top: 0; bottom: 13px; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div>
+      <div style="position: absolute; bottom: 2px; left: 50%; transform: translateX(calc(-50% - 2px)); font-size: 9px; color: #1a1a18; white-space: nowrap; line-height: 1;">-10</div>
+    </div>
+    <div style="border: 0.5px solid #ecbf73; border: 0.5px solid #ebba6a; border: 0.5px solid #ecbf73; border-radius: 8px; padding: 10px 6px; background: #faeeda; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #633806; line-height: 1.3; text-align: center;">Maintain</div>
+    </div>
+    <div style="border: 0.5px solid #f7d07a; border: 0.5px solid #f7ce76; border: 0.5px solid #f7d07a; border-radius: 8px; padding: 10px 6px; background: #fef9ee; display: flex; align-items: center; justify-content: center; min-height: 128px;">
+      <div style="font-size: 10px; font-weight: 500; color: #854f0b; line-height: 1.3; text-align: center;">Connect</div>
+    </div>
+
+  </div>
+
+  <div class="spectrum-compact-legend" style="border: 0.5px solid #b4b2a9; border-radius: 12px; background: #ffffff; margin-top: 8px; padding: 16px; flex-direction: column; align-items: center; gap: 10px;">
+
+    <div style="font-size: 8.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #888780; text-align: center; white-space: nowrap;">↑ Greater community influence</div>
+
+    <div style="display: flex; align-items: center; width: 100%; gap: 10px;">
+      <div class="axis-h-label" style="text-align: left;">← Works against you</div>
+      <div style="flex: 1; position: relative; height: 40px;">
+        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 0.5px; background: #b4b2a9; transform: translateY(-50%);"></div>
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #b4b2a9; opacity: 0.4; transform: translateX(-50%);"></div>
+      </div>
+      <div class="axis-h-label" style="text-align: right;">Works with you <br class="axis-break">→</div>
+    </div>
+
+    <div style="font-size: 8.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #888780; text-align: center; white-space: nowrap;">↓ Less community influence</div>
+
+  </div>
+
+<!-- PASSWORD OVERLAY -->
+<div id="pw-overlay" style="
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  background: rgba(245, 244, 240, 0.55);
+">
+  <div style="
+    background: #ffffff; border-radius: 16px;
+    border: 0.5px solid #b4b2a9;
+    padding: 36px 40px; width: 340px; max-width: 90vw;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    display: flex; flex-direction: column; gap: 20px;
+  ">
+    <div>
+      <div style="font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: #888780; margin-bottom: 6px;">Confidential</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <input id="pw-input" type="password" placeholder="Enter password"
+        autocomplete="current-password"
+        style="
+          width: 100%; padding: 10px 14px;
+          border: 0.5px solid #b4b2a9; border-radius: 8px;
+          font-size: 14px; font-family: inherit; color: #1a1a18;
+          background: #f9f8f4; outline: none;
+        "
+        onkeydown="if(event.key==='Enter') checkPW()"
+      />
+      <div id="pw-error" style="font-size: 12px; color: #a32d2d; display: none; padding-left: 2px;">Incorrect password. Try again.</div>
+    </div>
+    <button onclick="checkPW()" style="
+      width: 100%; padding: 11px;
+      background: #1a1a18; color: #ffffff;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 500; font-family: inherit;
+      cursor: pointer; letter-spacing: .02em;
+    ">Continue</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    if (sessionStorage.getItem('pipeline_auth') === '1') {
+      document.getElementById('pw-overlay').style.display = 'none';
+    }
+  })();
+
+  function checkPW() {
+    var val = document.getElementById('pw-input').value;
+    var err = document.getElementById('pw-error');
+    if (val === 'ReesePiper1!') {
+      sessionStorage.setItem('pipeline_auth', '1');
+      document.getElementById('pw-overlay').style.display = 'none';
+      err.style.display = 'none';
+    } else {
+      err.style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+</script>
+
+</body>
+</html>

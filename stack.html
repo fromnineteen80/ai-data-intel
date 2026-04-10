@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Stack · Cost to Us by Phase</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #111110; --ink-mid: #4a4a47; --ink-light: #888880;
+    --rule: #d9d9d9; --rule-light: #ebebeb; --page: #e8e7e2; --white: #ffffff;
+    --pre: #1a1a18; --beta: #1c3a2a; --launch: #1a1f3a;
+    --beta-tag: #c8e6d5; --beta-tag-text: #1c3a2a;
+    --launch-tag: #c5cbeb; --launch-tag-text: #1a1f3a;
+    --free-tag: #fde9b0; --free-tag-text: #5a3d00; --consult-tag: #f7c1c1; --consult-tag-text: #791f1f; --acquire-tag: #f9c58a; --acquire-tag-text: #6b2d00;
+  }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: var(--page); color: var(--ink); padding: 3rem 2rem 5rem; line-height: 1.5; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  .doc-header { border-bottom: 1px solid var(--rule); padding-bottom: 1.25rem; margin-bottom: 2.5rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .doc-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); }
+  .doc-title { font-size: 18px; font-weight: 600; margin-top: 4px; letter-spacing: -.01em; }
+  .doc-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; }
+  .phase-intro { font-size: 13px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 1rem; }
+  .phase-intro p + p { margin-top: .6rem; }
+  .phase { margin-bottom: 2.5rem; }
+  .phase-header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 6px 6px 0 0; }
+  .phase-header.pre { background: var(--pre); }
+  .phase-header.beta { background: var(--beta); }
+  .phase-header.launch { background: var(--launch); }
+  .phase-name { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); font-family: 'IBM Plex Mono', monospace; }
+  .phase-desc { font-size: 13px; color: rgba(255,255,255,.9); margin-top: 3px; }
+  .phase-total-label { font-size: 10px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .06em; text-align: right; margin-bottom: 2px; font-family: 'IBM Plex Mono', monospace; }
+  .phase-total { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.9); white-space: nowrap; text-align: right; }
+  table { width: 100%; border-collapse: collapse; background: var(--white); border: 1px solid var(--rule); border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; table-layout: fixed; }
+  table col.col-source { width: 22%; }
+  table col.col-desc   { width: 48%; }
+  table col.col-cost   { width: 30%; }
+  thead th { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-light); padding: 8px 14px; text-align: left; background: #f2f1ec; border-bottom: 1px solid var(--rule); font-family: 'IBM Plex Mono', monospace; }
+  thead th:last-child { text-align: right; }
+  tbody tr { border-bottom: 1px solid var(--rule-light); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #faf9f5; }
+  td { padding: 10px 14px; font-size: 12.5px; vertical-align: top; }
+  .td-source { font-weight: 500; color: var(--ink); }
+  .td-category { font-size: 10.5px; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+  .td-desc { font-size: 12px; color: var(--ink-mid); line-height: 1.55; }
+  .td-cost { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink); text-align: right; white-space: nowrap; vertical-align: top; }
+  .td-cost-sub { font-size: 10px; font-weight: 400; color: var(--ink-light); font-family: 'IBM Plex Sans', sans-serif; margin-top: 2px; }
+  .cost-free { display: inline-block; background: var(--free-tag); color: var(--free-tag-text); font-size: 10px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: .04em; padding: 2px 6px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; white-space: nowrap; }
+  .tag-beta { background: var(--beta-tag); color: var(--beta-tag-text); }
+  .tag-launch { background: var(--launch-tag); color: var(--launch-tag-text); }
+  tfoot td { padding: 10px 14px; background: #f2f1ec; border-top: 1px solid var(--rule); font-size: 12px; }
+  .tfoot-label { font-size: 9px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-mid); font-family: 'IBM Plex Mono', monospace; }
+  .tfoot-cost { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--ink); text-align: right; }
+  .summary-block { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-bottom: 2.5rem; }
+  .summary-head { background: #1a1a18; padding: .75rem 1.25rem; }
+  .summary-head-label { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); font-family: 'IBM Plex Mono', monospace; }
+  .note { margin-top: 2.5rem; padding: 1rem 1.25rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--white); }
+  .note-label { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; }
+  .note-body { font-size: 12px; color: var(--ink-mid); line-height: 1.65; }
+  .note-body p + p { margin-top: 6px; }
+
+
+  .stack-col-header {
+    font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; text-align: center; padding-bottom: 3px;
+  }
+  .stack-cell-data {
+    background: var(--white); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 6px 8px; font-size: 11px; color: var(--ink-mid); line-height: 1.4; min-width: 0; overflow: hidden;
+  }
+  .stack-cell-desc {
+    background: var(--white); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 6px 8px; font-size: 11px; color: var(--ink-light); line-height: 1.5; min-width: 0; overflow: hidden;
+  }
+  .stack-cell-layer {
+    border-radius: 3px; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 6px 4px; font-size: 10px; font-weight: 600; color: #fff;
+    word-break: break-word; min-width: 0; overflow: hidden; position: relative;
+  }
+  .stack-layer-arrow {
+    position: absolute; top: 4px; right: 5px; font-size: 9px; color: rgba(255,255,255,0.6); line-height: 1;
+  }
+  .tag-consult { background: var(--consult-tag); color: var(--consult-tag-text); }
+  .tag-acquire { background: var(--acquire-tag); color: var(--acquire-tag-text); }
+  .stack-tag { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; margin-bottom: 5px; }
+  .stack-item { margin-bottom: 3px; }
+  .stack-item:last-child { margin-bottom: 0; }
+  .bridge-pill {
+    font-size: 8px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec;
+    border: 1px solid var(--rule); border-radius: 3px; padding: 2px 3px;
+    text-align: center; line-height: 1.3; display: block; width: 100%; word-break: break-word;
+  }
+  .deploy-cell {
+    background: var(--white); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 5px 4px; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-size: 10px; font-weight: 600; color: var(--ink);
+    word-break: break-word; min-width: 0; overflow: hidden;
+    align-self: stretch;
+  }
+  .stack-pills-below { display: none; }
+  @media (max-width: 680px) {
+    .stack-pills-below { display: flex; flex-direction: row; flex-wrap: wrap; gap: 5px; margin-top: 8px; width: 100%; }
+    .stack-bridge { display: none !important; }
+    .stack-grid-outer { grid-template-columns: 25% 25% 25% 0% 25% !important; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .phase-header { grid-template-columns: 1fr; }
+    .phase-total, .phase-total-label { text-align: left; }
+    td { padding: 8px 10px; }
+    thead th { padding: 6px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ─── PRODUCT STACK ─── -->
+  <div style="margin-bottom: 3rem;">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--rule); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: .5rem;">
+      <div>
+        <div style="font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace;">Product Architecture</div>
+        <div style="font-size: 18px; font-weight: 600; margin-top: 4px; letter-spacing: -.01em;">Intelligence &amp; Deployment Stacks</div>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 1.5rem;"><strong>Problem:</strong> There are endless microtargeting, e-commerce, voter file, regulatory trackers, and legislative scanning tools. Each mirrors the fact that every team accessing this data is operating in siloes. It is both expensive and messy. And out of date for the agentic AI shift happening right now.</p>
+    <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 1.5rem;"><strong>Solution:</strong> We are building a stack that fixes these problems, creates better solutions and interconnected deployment strategies that enhance your license to operate, build credibility, and grow your business. We are assembling the right stack of data intelligence and modeling, and powering it with AI and other deployment methods that can aid your entire team.</p>
+
+    <!-- single unified grid: 2fr 2fr 1fr 80px 1fr — datasets=description, layer=deployment, bridge fixed -->
+    <div class="stack-grid-outer" style="display: grid; grid-template-columns: 22.5% 22.5% 20% 15% 20%; gap: 3px; align-items: stretch;">
+
+      <!-- Header row -->
+      <div class="stack-col-header">Datasets</div>
+      <div class="stack-col-header">Description</div>
+      <div class="stack-col-header">Stack</div>
+      <div></div>
+      <div class="stack-col-header">Deployment</div>
+
+      <!-- Bridge: column 4, spans all 5 data rows — arrow | pills | arrow -->
+      <div class="stack-bridge" style="grid-column: 4; grid-row: 2 / 7; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 2px; padding: 0;">
+        <div style="font-size: 10px; color: var(--ink-light); flex-shrink: 0;">&#8594;</div>
+        <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0;">
+          <span class="bridge-pill">Stakeholder Mapping</span>
+          <span class="bridge-pill">Voter File</span>
+          <span class="bridge-pill">Database</span>
+          <span class="bridge-pill">AI Assistant</span>
+          <span class="bridge-pill">MCP Server</span>
+          <span class="bridge-pill">Skills &amp; Agents</span>
+        </div>
+        <div style="font-size: 10px; color: var(--ink-light); flex-shrink: 0;">&#8594;</div>
+      </div>
+
+      <!-- Row 1 -->
+      <div class="stack-cell-data" style="grid-column:1;grid-row:2;"><span class="stack-tag tag-consult">Consult</span><div class="stack-item">Message testing</div><div class="stack-item">Sentiment scoring</div><div class="stack-item">Narrative development</div><div class="stack-item">Issue framing</div></div>
+      <div class="stack-cell-desc" style="grid-column:2;grid-row:2;">What you say to whom. Issue framing &amp; narrative built on segmentation.</div>
+      <div class="stack-cell-layer" style="grid-column:3;grid-row:2;background:#7aaec8;">Brand &amp;<br>Messaging</div>
+      
+
+      <!-- Row 2 -->
+      <div class="stack-cell-data" style="grid-column:1;grid-row:3;"><span class="stack-tag tag-consult">Consult</span><div class="stack-item">Voter file</div><div class="stack-item">Tunnl</div><div class="stack-item">Modeled partisanship</div><div class="stack-item">Turnout history</div><div class="stack-item">District universes</div></div>
+      <div class="stack-cell-desc" style="grid-column:2;grid-row:3;">Converts research into a deployable universe of individuals, cohorts, &amp; communities.</div>
+      <div class="stack-cell-layer" style="grid-column:3;grid-row:3;background:#5a8fae;"><span class="stack-layer-arrow">↑</span>Segmentation<br>&amp; Personas</div>
+      
+
+      <!-- Row 3 -->
+      <div class="stack-cell-data" style="grid-column:1;grid-row:4;"><span class="stack-tag tag-acquire">Acquire</span><div class="stack-item">Proprietary polling waves</div><div class="stack-item">SSRS &amp; Dynata</div><div class="stack-item">Longitudinal panel</div><div class="stack-item">Issue toplines</div></div>
+      <div class="stack-cell-desc" style="grid-column:2;grid-row:4;">Proprietary signal no competitor can access. Starts the time-series compounding.</div>
+      <div class="stack-cell-layer" style="grid-column:3;grid-row:4;background:#3d7090;"><span class="stack-layer-arrow">↑</span>Polling<br>&amp; Survey</div>
+      
+
+      <!-- Row 4 -->
+      <div class="stack-cell-data" style="grid-column:1;grid-row:5;"><span class="stack-tag tag-acquire">Acquire</span><div class="stack-item">Experian ConsumerView</div><div class="stack-item">Revelio Labs</div><div class="stack-item">Lightcast</div><div class="stack-item">Symphony Health</div><div class="stack-item">CMS &amp; HRSA</div></div>
+      <div class="stack-cell-desc" style="grid-column:2;grid-row:5;">Consumer habits, preferences, &amp; financial exposure. Resolves public data into economic behavior.</div>
+      <div class="stack-cell-layer" style="grid-column:3;grid-row:5;background:#2d5570;"><span class="stack-layer-arrow">↑</span>Consumer<br>Intelligence</div>
+      
+
+      <!-- Row 5 -->
+      <div class="stack-cell-data" style="grid-column:1;grid-row:6;"><span class="stack-tag cost-free">Free</span><div class="stack-item">Congress.gov</div><div class="stack-item">LegiScan</div><div class="stack-item">FEC</div><div class="stack-item">BLS</div><div class="stack-item">ACS</div><div class="stack-item">CDC PLACES &amp; SVI</div><div class="stack-item">HUD</div><div class="stack-item">NIBRS</div><div class="stack-item">NCES</div><div class="stack-item">TIGER/Line</div><div class="stack-item">Pew</div></div>
+      <div class="stack-cell-desc" style="grid-column:2;grid-row:6;">Public geographic, demographic, workforce, health, housing, crime, education, &amp; legislative data.</div>
+      <div class="stack-cell-layer" style="grid-column:3;grid-row:6;background:#1e3a52;"><span class="stack-layer-arrow">↑</span>Community<br>Base</div>
+
+      <!-- DEPLOYMENT: single container spanning all 5 rows -->
+      <div style="grid-column:5;grid-row:2/7;display:grid;grid-template-rows:1fr 6fr 1fr;">
+        <div></div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Microtargeting</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Marketing, Advertising<br>&amp; E-Commerce</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Public Sector<br>Sales</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Executive<br>Positioning</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Brand Credibility<br>&amp; Crisis Response</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Government Affairs<br>&amp; Public Policy</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Permitting &amp;<br>Regulatory</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Grassroots<br>Management</div>
+          <div class="deploy-cell" style="flex:1;min-height:28px;">Public<br>Relations</div>
+        </div>
+        <div></div>
+      </div>
+      
+
+    </div>
+
+    <!-- Pills below — mobile only -->
+      <div class="stack-pills-below" style="margin-top:8px;align-items:center;">
+        <span style="font-size: 12px; color: var(--ink-light);">&#8594;</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">Stakeholder Mapping</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">Voter File</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">Database</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">AI Assistant</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">MCP Server</span>
+        <span style="font-size: 9px; font-weight: 500; color: var(--ink-mid); background: #f2f1ec; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; white-space: nowrap;">Skills &amp; Agents</span>
+        <span style="font-size: 12px; color: var(--ink-light);">&#8594;</span>
+      </div>
+
+  </div>
+  <div style="margin-top: 2.5rem;">
+    <div style="border-bottom: 1px solid var(--rule); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+      <div style="font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; margin-bottom: .4rem;">Data Acquisition</div>
+      <div style="font-size: 18px; font-weight: 600; letter-spacing: -.01em;">Cost to Us by Phase</div>
+    </div>
+
+  <!-- ─── PHASE 1 ─── -->
+
+  <div class="phase-intro">
+    <p>The pre-money phase runs entirely on public data. The goal is to prove the methodology works before spending on licensed datasets. If the argument does not hold on free data, paid data will not fix it.</p>
+    <p>Congressional district and zip code geography makes every dataset in the stack legible to a policymaker, a district, and an electorate. Without it we have data. With it we have a decision tool. Pew microdata serves as a sentiment benchmark and calibration layer until the first proprietary polling wave runs in Phase 2. By the end of Phase 1 the platform has a working model, a technology stack built on Claude Code, and a proof of concept ready for a first client conversation. Cost: zero.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header pre">
+      <div>
+        <div class="phase-name">Phase 1 &middot; Pre-Money</div>
+        <div class="phase-desc">Proof of concept. Demonstrate thesis, build prototype, get to first meeting.</div>
+      </div>
+      <div>
+        <div class="phase-total-label">Annual data cost</div>
+        <div class="phase-total">$0</div>
+      </div>
+    </div>
+    <table>
+      <colgroup><col class="col-source"><col class="col-desc"><col class="col-cost"></colgroup>
+      <thead><tr><th>Source</th><th>What It Provides</th><th>Annual Cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="td-source">Congress.gov API</div><div class="td-category">Legislative, Federal</div></td>
+          <td><div class="td-desc">Full federal bill text, status, sponsors, and roll calls via Library of Congress. Replaced ProPublica Congress API, which is now defunct.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">FEC Data</div><div class="td-category">Campaign Finance</div></td>
+          <td><div class="td-desc">Complete federal campaign finance filings, PAC data, candidate fundraising, and independent expenditure records.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">LegiScan (Basic)</div><div class="td-category">Legislative, 50 States</div></td>
+          <td><div class="td-desc">All 50 states plus Congress: bill text, status, sponsors, roll calls. Free tier covers weekly snapshot pull API. Sufficient for prototype.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">BLS Microdata</div><div class="td-category">Workforce</div></td>
+          <td><div class="td-desc">Current Population Survey, QCEW, and OEWS public-use files. Occupational employment and wage estimates at state and metro level.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">ACS Microdata</div><div class="td-category">Geographic, Demographic</div></td>
+          <td><div class="td-desc">Census Bureau PUMS files. Income, housing, employment, and demographic variables at tract level. The geographic backbone of the platform.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">CDC PLACES + SVI</div><div class="td-category">Health, Social Determinants</div></td>
+          <td><div class="td-desc">PLACES gives tract-level chronic disease, mental health, and disability prevalence. Social Vulnerability Index adds socioeconomic stress and housing burden. Replaces Komodo.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">HUD, Census Housing</div><div class="td-category">Housing</div></td>
+          <td><div class="td-desc">HUD fair market rents, housing cost burden, and CHAS affordability data. ACS covers owner/renter rates, vacancy, and overcrowding. Replaces CoreLogic and Zillow.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">FBI NIBRS, BJS NCVS</div><div class="td-category">Crime, Public Safety</div></td>
+          <td><div class="td-desc">NIBRS covers incident-level crime by geography. NCVS captures unreported crime and felt safety &mdash; more relevant to sentiment work than reported-only metrics.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">NCES, IPEDS</div><div class="td-category">Education</div></td>
+          <td><div class="td-desc">NCES Common Core covers every public K&ndash;12 school. IPEDS covers every Title IV institution on enrollment, cost, and completion. Civil Rights Data Collection adds equity variables.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Pew Research Center</div><div class="td-category">Sentiment Benchmark</div></td>
+          <td><div class="td-desc">Full case-level microdata behind Pew&rsquo;s survey reports, including the American Trends Panel &mdash; their nationally representative online panel covering technology and society, workforce attitudes, economic anxiety, and political typology. Used to benchmark and validate in-house polling waves and anchor the Institute&rsquo;s public outputs. Data released on a lag. Requires free account registration.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">MCP Server Build</div><div class="td-category">Technology, Built with Claude Code</div></td>
+          <td><div class="td-desc">Model Context Protocol server enabling AI agents to query the platform&rsquo;s data and modeling layer. Built with Claude Code at this stage. No external build cost.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Anthropic Agent Build</div><div class="td-category">Technology, Built with Claude Code</div></td>
+          <td><div class="td-desc">AI agent layer powering stakeholder intelligence, legislative monitoring, and sentiment synthesis. Built with Claude Code at this stage. No external build cost.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">API Build</div><div class="td-category">Technology, Built with Claude Code</div></td>
+          <td><div class="td-desc">Core platform API for client data access, integration, and eventual licensing layer. Built with Claude Code at this stage. No external build cost.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><span class="tfoot-label">Phase 1 total &middot; all public sources + Claude Code builds &middot; congressional district + zip code geography via Census TIGER/Line included</span></td>
+          <td class="tfoot-cost">$0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ─── PHASE 2 ─── -->
+
+  <div class="phase-intro">
+    <p>Phase 1 gives us structure and geography. Phase 2 adds the layer every competitor misses by not truly blending consumer and community and voter perspectives. Doing so creates a stack that cleans up what has always been messy in every organization and helps teams make more strategic and data driven decisions that can enrich actions going forward. It also cuts down on the need for siloed and redundant consulting costs in the era of agentic AI.</p>
+    <p>That is what makes our platform worth paying for.</p>
+    <p>Tunnl resolves public data into individual-level records. Revelio adds near real-time workforce movement by occupation and pace, drawn from public professional profiles. The LegiScan upgrade moves from weekly snapshots to real-time monitoring across federal and all 50 states, which is what the stakeholder management system needs to be operationally useful rather than a research reference.</p>
+    <p>The voter file ties polling respondents and audience segments to electoral history, modeled partisanship, and district-level turnout. We should confirm with Tunnl first, as their infrastructure likely includes voter file access already. The first polling wave is the most important addition in the stack. It is the first proprietary data in the lake, and the point at which the time-series starts compounding.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header beta">
+      <div>
+        <div class="phase-name">Phase 2 &middot; Beta</div>
+        <div class="phase-desc">First clients. Validate product. Add proprietary workforce exposure and live legislative intelligence. Everything in Phase 1 carries forward.</div>
+      </div>
+      <div>
+        <div class="phase-total-label">Added annual cost</div>
+        <div class="phase-total">$95K &ndash; $400K</div>
+      </div>
+    </div>
+    <table>
+      <colgroup><col class="col-source"><col class="col-desc"><col class="col-cost"></colgroup>
+      <thead><tr><th>Source</th><th>What It Adds</th><th>Annual Cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="td-source">Tunnl</div><div class="td-category">Audience Infrastructure</div></td>
+          <td><div class="td-desc">Base audience modeling and targeting layer. Provides the individual-level identity spine the platform resolves against. Negotiate as equity or revenue-share; may come in as a partner at no cost.</div></td>
+          <td class="td-cost">$0 &ndash; $100K<div class="td-cost-sub">or partner</div></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Revelio Labs</div><div class="td-category">Workforce Movement</div></td>
+          <td><div class="td-desc">Workforce analytics built from public professional profiles. Shows occupation transitions, displacement patterns, and labor market movement in near real time.</div></td>
+          <td class="td-cost">$75K &ndash; $150K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">LegiScan Commercial</div><div class="td-category">State Legislative</div></td>
+          <td><div class="td-desc">Upgrades the free tier to the Push API: real-time updates every 15 minutes to 4 hours across all 50 states and Congress. Required once clients use the stakeholder management system live.</div></td>
+          <td class="td-cost">$10K &ndash; $20K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Anthropic API</div><div class="td-category">Agent Runtime</div></td>
+          <td><div class="td-desc">Usage-based cost for running the AI agent layer at beta client volume. Covers sentiment synthesis, legislative monitoring, and stakeholder scoring queries.</div></td>
+          <td class="td-cost">$5K &ndash; $15K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">MCP Server Hosting</div><div class="td-category">Infrastructure</div></td>
+          <td><div class="td-desc">Cloud hosting for the MCP server built in Phase 1. Modest usage at beta stage.</div></td>
+          <td class="td-cost">$2K &ndash; $8K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">API Hosting</div><div class="td-category">Infrastructure</div></td>
+          <td><div class="td-desc">Cloud hosting and infrastructure for the platform API built in Phase 1. Covers compute, storage, and pipeline at beta client volume.</div></td>
+          <td class="td-cost">$3K &ndash; $7K</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><span class="tfoot-label">Phase 2 added &middot; low assumes Tunnl + voter file (L2 or TargetSmart, $50K&ndash;$100K) as partner or redundant</span></td>
+          <td class="tfoot-cost">$95K &ndash; $400K</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ─── PHASE 3 ─── -->
+
+  <div class="phase-intro">
+    <p>Phases 1 and 2 give us geography, legislative context, workforce movement, and first-party polling. What they do not give us is individual-level financial exposure. Lightcast and Experian ConsumerView close that gap. Instead of knowing that people in a district are anxious about AI, we can show which occupations within that district are most exposed, how their credit stress profiles compare, and how that has shifted over six months. That specificity is what makes the platform decision-grade rather than directional.</p>
+    <p>Lightcast covers workforce demand by occupation, geography, and income band. Paired with Revelio from Phase 2, we have both sides of workforce transition in the same stack. Experian ConsumerView adds income and credit stress at the cohort level, tying sentiment to real financial exposure. That linkage is the core claim of the platform.</p>
+    <p>The second polling wave begins the longitudinal panel, re-contacting prior respondents to build the time-series. Every cycle adds depth, raises switching costs, and makes the model more predictive. By the end of Phase 3 each client engagement generates signal that improves the platform for every other client.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header launch">
+      <div>
+        <div class="phase-name">Phase 3 &middot; Must-Have at Launch</div>
+        <div class="phase-desc">Full commercial. Financial exposure linkage live. Multiple clients. Phases 1 and 2 carry forward in full.</div>
+      </div>
+      <div>
+        <div class="phase-total-label">Added annual cost</div>
+        <div class="phase-total">$350K &ndash; $750K</div>
+      </div>
+    </div>
+    <table>
+      <colgroup><col class="col-source"><col class="col-desc"><col class="col-cost"></colgroup>
+      <thead><tr><th>Source</th><th>What It Adds</th><th>Annual Cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="td-source">Lightcast API</div><div class="td-category">Labor Market Intelligence</div></td>
+          <td><div class="td-desc">The standard for workforce exposure by geography, occupation, and income band. Pairs with Revelio to give you displacement and demand in the same stack.</div></td>
+          <td class="td-cost">$100K &ndash; $175K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Experian ConsumerView</div><div class="td-category">Financial Segmentation</div></td>
+          <td><div class="td-desc">Income band, credit stress indicators, and demographic cohort segmentation at the individual level. Ties sentiment to financial exposure at the cohort level.</div></td>
+          <td class="td-cost">$150K &ndash; $300K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Symphony Health</div><div class="td-category">Pharma Market Data <span class="tag tag-launch">Vertical</span></div></td>
+          <td><div class="td-desc">Prescription volume, drug utilization, formulary placement, and payer coverage data. An ICON plc company, Symphony is the lower-cost and more negotiable alternative to IQVIA with comparable coverage for population-level analytics. Entry point for health and pharma trade association verticals. Scope to utilization trends and formulary context; full prescriber-level feeds are a separate and much larger conversation.</div></td>
+          <td class="td-cost">$75K &ndash; $200K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">CMS Research Data (RESDAC)</div><div class="td-category">Medicare, Medicaid Claims</div></td>
+          <td><div class="td-desc">Medicare and Medicaid claims data covering utilization, coverage gaps, and access patterns at the population level. Available at no cost through the Research Data Assistance Center for qualifying research applications. Requires a data use agreement and IRB review documentation.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">HRSA Workforce + HPSA</div><div class="td-category">Health Access, Workforce</div></td>
+          <td><div class="td-desc">Health Professional Shortage Area designations and workforce supply and demand projections for every licensed health profession. Free, updated annually, and politically legible to any audience working health access or rural health issues.</div></td>
+          <td class="td-cost"><span class="cost-free">Free</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Anthropic API</div><div class="td-category">Agent Runtime <span class="tag tag-launch">Scale-up</span></div></td>
+          <td><div class="td-desc">Incremental usage cost over Phase 2 as agent query volume grows with full client load. Covers expanded stakeholder scoring, issue tracking, and longitudinal sentiment synthesis.</div></td>
+          <td class="td-cost">+$15K &ndash; $45K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">MCP Server Hosting</div><div class="td-category">Infrastructure <span class="tag tag-launch">Scale-up</span></div></td>
+          <td><div class="td-desc">Incremental hosting as MCP server traffic grows with commercial usage and third-party platform integrations.</div></td>
+          <td class="td-cost">+$3K &ndash; $12K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">API Hosting</div><div class="td-category">Infrastructure <span class="tag tag-launch">Scale-up</span></div></td>
+          <td><div class="td-desc">Incremental compute and storage as the API serves full commercial volume including external partner and data licensing access.</div></td>
+          <td class="td-cost">+$7K &ndash; $18K</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><span class="tfoot-label">Phase 3 added &middot; low $275K base + $75K Symphony &middot; high $550K base + $200K Symphony &middot; CMS and HRSA free</span></td>
+          <td class="tfoot-cost">$350K &ndash; $750K</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- CUMULATIVE SUMMARY -->
+  <div class="summary-block">
+    <div class="summary-head">
+      <div class="summary-head-label">Cumulative Annual Cost &middot; Running Total by Phase</div>
+    </div>
+    <table style="border:none; border-radius:0;">
+      <colgroup><col class="col-source"><col class="col-desc"><col class="col-cost"></colgroup>
+      <thead><tr><th>Phase</th><th>What&rsquo;s Active</th><th>Cumulative Annual Cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div class="td-source">Phase 1 &middot; Pre-Money</div></td>
+          <td><div class="td-desc">All public sources + Claude Code builds</div></td>
+          <td class="td-cost">$0</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Phase 2 &middot; Beta</div></td>
+          <td><div class="td-desc">+ Tunnl ($0&ndash;$100K), Revelio, LegiScan, Voter File, Polling W1, hosting</div></td>
+          <td class="td-cost">$95K &ndash; $400K</td>
+        </tr>
+        <tr>
+          <td><div class="td-source">Phase 3 &middot; Full Launch</div></td>
+          <td><div class="td-desc">+ Lightcast, Experian, IQVIA, CMS claims, HRSA, Polling W2, scaled API and agent usage</div></td>
+          <td class="td-cost">$445K &ndash; $1.15M</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="note-label">Methodology Notes</div>
+    <div class="note-body">
+      <p><strong>On Tunnl:</strong> Modeled as $0&ndash;$100K. Free if Tunnl is a structural partner; $50K&ndash;$100K if brought in on a negotiated equity or revenue-share license. Treated as $0 in the low-end calculation throughout. This is the single biggest swing variable at Phase 2.</p>
+      <p><strong>On voter file:</strong> L2 is the recommended vendor &mdash; bipartisan, widely used in academic and nonpartisan research contexts. National licensing runs $50K&ndash;$100K annually. If Tunnl comes in as a partner, their infrastructure almost certainly includes voter file access already, making this redundant. Confirm before contracting.</p>
+      <p><strong>On Pew Research:</strong> Free, in Phase 1 as a sentiment benchmark and validation layer. Used to calibrate in-house polling waves and anchor the Institute&rsquo;s public outputs. Not a replacement for proprietary polling.</p>
+      <p><strong>On MCP, agent, and API:</strong> All three are built with Claude Code in Phase 1 at no external cost. Hosting and runtime costs begin in Phase 2 as they move to production. Anthropic API costs scale with agent query volume; Phase 3 figures are incremental over Phase 2, not duplicative.</p>
+      <p><strong>On what is excluded:</strong> Nielsen, Comscore, Mastercard SpendingPulse, JPMorgan Chase Institute, Komodo Health, CoreLogic, Zillow, Equifax, TransUnion. All are redundant with public sources, misaligned with the thesis, or appropriate only as client-vertical upsells at a later stage.</p>
+      <p><strong>On the Phase 3 ceiling:</strong> At $445K&ndash;$1.15M annually with Symphony Health included, four founding clients at $250K each covers the stack at the low end. Symphony is a vertical-specific add for health and pharma clients; without it the ceiling is $370K&ndash;$950K. Scope Symphony to population-level utilization and formulary context only. Full prescriber-level feeds are a separate negotiation and a materially larger cost.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

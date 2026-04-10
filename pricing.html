@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Pricing Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #111110;
+    --ink-mid: #4a4a47;
+    --ink-light: #888880;
+    --rule: #d9d9d9;
+    --rule-light: #ebebeb;
+    --page: #e8e7e2;
+    --white: #ffffff;
+    --cell: #f9f8f5;
+
+    --corp: #1a1f3a;
+    --corp-mid: #2d3d8f;
+    --corp-light: #b8bdd4;
+    --corp-pale: #f4f5f8;
+    --corp-head: #eaecf3;
+    --corp-border: #9aa0c0;
+
+    --pol: #1c3a2a;
+    --pol-mid: #2d6b45;
+    --pol-light: #adc4b8;
+    --pol-pale: #f4f7f5;
+    --pol-head: #e8eee9;
+    --pol-border: #8aaa96;
+
+    --con: #2a2018;
+    --con-mid: #6b5030;
+    --con-light: #c4b8a8;
+    --con-pale: #f7f5f2;
+    --con-head: #eeebe5;
+    --con-border: #a89880;
+
+    --npo: #3a1a1a;
+    --npo-mid: #8f2d2d;
+    --npo-light: #c4a8a8;
+    --npo-pale: #f7f2f2;
+    --npo-head: #eee5e5;
+    --npo-border: #a88080;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    padding: 3rem 2rem 5rem;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* HEADER */
+  .doc-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .doc-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); }
+  .doc-title { font-size: 18px; font-weight: 600; margin-top: 4px; letter-spacing: -.01em; }
+  .doc-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; }
+
+  /* BUYER PROFILE PILLS */
+  .profiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .profile-pill {
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .pill-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+    opacity: .55;
+  }
+  .pill-name { font-size: 14px; font-weight: 600; }
+  .pill-desc { font-size: 11px; opacity: .7; margin-top: 2px; line-height: 1.4; }
+
+  .pill-corp { background: var(--white); color: var(--corp); border: 1px solid var(--rule); border-left: 3px solid var(--corp-border); }
+  .pill-pol  { background: var(--white); color: var(--pol);  border: 1px solid var(--rule); border-left: 3px solid var(--pol-border); }
+  .pill-con  { background: var(--white); color: var(--con);  border: 1px solid var(--rule); border-left: 3px solid var(--con-border); }
+  .pill-npo  { background: var(--white); color: var(--npo);  border: 1px solid var(--rule); border-left: 3px solid var(--npo-border); }
+
+  /* MATRIX TABLE */
+  .matrix-wrap {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  col.col-tier  { width: 22%; }
+  col.col-buyer { width: 19.5%; }
+
+  /* COLUMN HEADERS */
+  thead th {
+    padding: 10px 14px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  th.th-tier { background: #4a4a47; color: rgba(255,255,255,.6); }
+  th.th-corp { background: var(--corp-head); color: var(--corp); }
+  th.th-pol  { background: var(--pol-head);  color: var(--pol);  }
+  th.th-con  { background: var(--con-head);  color: var(--con);  }
+  th.th-npo  { background: var(--npo-head);  color: var(--npo);  }
+
+  /* SECTION HEADER ROWS */
+  tr.section-head td {
+    padding: 4px 14px;
+    background: #f2f1ec;
+    line-height: 1.3;
+  }
+  tr.section-head td:first-child {
+    background: #4a4a47;
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* DATA ROWS */
+  tbody tr.data-row td {
+    padding: 13px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rule-light);
+    font-size: 12px;
+  }
+  tbody tr.data-row:last-child td { border-bottom: none; }
+
+  td.td-tier {
+    background: #4a4a47;
+  }
+  .tier-name {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 3px;
+  }
+  .tier-includes {
+    font-size: 10.5px;
+    color: rgba(255,255,255,.6);
+    line-height: 1.5;
+  }
+
+  /* PRICE CELLS */
+  td.td-price { vertical-align: top; background: var(--white); }
+  td.td-addon-price {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    vertical-align: top;
+    background: var(--white);
+  }
+
+  .price-mo {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .price-setup {
+    font-size: 10px;
+    color: var(--ink-light);
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .price-note {
+    font-size: 10.5px;
+    color: var(--ink-mid);
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  /* ADDON ROWS */
+  tr.addon-row td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule-light);
+    font-size: 12px;
+    vertical-align: top;
+  }
+  tr.addon-row:last-child td { border-bottom: none; }
+
+  td.td-addon {
+    background: #4a4a47;
+  }
+  .addon-name {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 2px;
+  }
+  .addon-desc {
+    font-size: 10.5px;
+    color: rgba(255,255,255,.6);
+    line-height: 1.45;
+  }
+
+  td.td-addon-price {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    vertical-align: top;
+    background: var(--white);
+  }
+
+
+  /* NOTES SECTION */
+  .note {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--white);
+  }
+  .note-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 8px;
+  }
+  .note-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+  }
+  .note-item {
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    padding-left: 10px;
+    border-left: 2px solid var(--rule);
+  }
+  .note-item strong { color: var(--ink); font-weight: 500; }
+
+  @media (max-width: 760px) {
+    .profiles { grid-template-columns: 1fr 1fr; }
+    .note-grid { grid-template-columns: 1fr; }
+    body { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-header">
+    <div>
+      <div class="doc-eyebrow">AI Transition Platform</div>
+      <div class="doc-title">Pricing Matrix &middot; Buyer Profiles</div>
+    </div>
+    <div class="doc-label">Confidential</div>
+  </div>
+
+  <!-- BUYER PROFILE PILLS -->
+  <div class="profiles">
+    <div class="profile-pill pill-corp">
+      <div class="pill-label">Profile 01</div>
+      <div class="pill-name">Corporate</div>
+      <div class="pill-desc">Fortune 500 government affairs, strategy, and executive functions</div>
+    </div>
+    <div class="profile-pill pill-pol">
+      <div class="pill-label">Profile 02</div>
+      <div class="pill-name">Political</div>
+      <div class="pill-desc">Campaigns, PACs, party committees, and issue advocacy organizations</div>
+    </div>
+    <div class="profile-pill pill-con">
+      <div class="pill-label">Profile 03</div>
+      <div class="pill-name">Consulting</div>
+      <div class="pill-desc">Government affairs and public affairs firms licensing for client delivery</div>
+    </div>
+    <div class="profile-pill pill-npo">
+      <div class="pill-label">Profile 04</div>
+      <div class="pill-name">Non-Profit</div>
+      <div class="pill-desc">Trade associations, research institutions, and advocacy organizations</div>
+    </div>
+  </div>
+
+  <!-- MAIN MATRIX -->
+  <div class="matrix-wrap">
+    <table>
+      <colgroup>
+        <col class="col-tier">
+        <col class="col-buyer">
+        <col class="col-buyer">
+        <col class="col-buyer">
+        <col class="col-buyer">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="th-tier">Tier</th>
+          <th class="th-corp">Corporate</th>
+          <th class="th-pol">Political</th>
+          <th class="th-con">Consulting</th>
+          <th class="th-npo">Non-Profit</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- SECTION: SUBSCRIPTION TIERS -->
+        <tr class="section-head">
+          <td></td><td colspan="4"><span class="section-label">Subscription Tiers &middot; Billed monthly</span></td>
+        </tr>
+
+        <!-- TIER 1: BASE -->
+        <tr class="data-row">
+          <td class="td-tier">
+            <div class="tier-name">Base</div>
+            <div class="tier-includes">Industry personas &middot; API access &middot; Stakeholder modeling &middot; Legislative monitoring &middot; Platform onboarding</div>
+          </td>
+          <td class="td-price corp">
+            <span class="price-mo">$18,000</span>
+            <span class="price-setup">$35,000 setup</span>
+            <div class="price-note">Covers up to 3 internal users. Additional seats $1,200/mo each.</div>
+          </td>
+          <td class="td-price pol">
+            <span class="price-mo">$10,000</span>
+            <span class="price-setup">$15,000 setup</span>
+            <div class="price-note">Cycle-based licensing available. Contact for election-year terms.</div>
+          </td>
+          <td class="td-price con">
+            <span class="price-mo">$15,000</span>
+            <span class="price-setup">$25,000 setup</span>
+            <div class="price-note">Includes white-label delivery rights for up to 3 client accounts.</div>
+          </td>
+          <td class="td-price npo">
+            <span class="price-mo">$5,000</span>
+            <span class="price-setup">$10,000 setup</span>
+            <div class="price-note">501(c)(3) and 501(c)(6) eligible. Requires annual verification.</div>
+          </td>
+        </tr>
+
+        <!-- TIER 2: POLLING -->
+        <tr class="data-row">
+          <td class="td-tier">
+            <div class="tier-name">Custom Polling</div>
+            <div class="tier-includes">Base included &middot; 2 proprietary polling waves per year &middot; Issue-specific toplines &middot; Cohort breakouts by geography and income band</div>
+          </td>
+          <td class="td-price corp">
+            <span class="price-mo">$32,000</span>
+            <span class="price-setup">$35,000 setup</span>
+            <div class="price-note">Includes issue alignment with client policy priorities. Additional waves at $65,000 each.</div>
+          </td>
+          <td class="td-price pol">
+            <span class="price-mo">$30,000</span>
+            <span class="price-setup">$15,000 setup</span>
+            <div class="price-note">Polling designed around district-level and issue-specific targets. Additional waves at $60,000 each.</div>
+          </td>
+          <td class="td-price con">
+            <span class="price-mo">$28,000</span>
+            <span class="price-setup">$25,000 setup</span>
+            <div class="price-note">Polling outputs formatted for client deliverables. Additional waves at $55,000 each.</div>
+          </td>
+          <td class="td-price npo">
+            <span class="price-mo">$10,000</span>
+            <span class="price-setup">$10,000 setup</span>
+            <div class="price-note">One wave per year included. Second wave available at $40,000.</div>
+          </td>
+        </tr>
+
+        <!-- TIER 3: FULL -->
+        <tr class="data-row">
+          <td class="td-tier">
+            <div class="tier-name">Full Platform</div>
+            <div class="tier-includes">Base + Polling included &middot; Voter file integration &middot; Custom persona modeling by industry and issue &middot; Economic exposure linkage</div>
+          </td>
+          <td class="td-price corp">
+            <span class="price-mo">$48,000</span>
+            <span class="price-setup">$35,000 setup</span>
+            <div class="price-note">Custom personas built to client vertical and issue set. Includes quarterly model refresh.</div>
+          </td>
+          <td class="td-price pol">
+            <span class="price-mo">$48,000</span>
+            <span class="price-setup">$15,000 setup</span>
+            <div class="price-note">Voter file matched to district targets. Persona modeling by voter segment and turnout history.</div>
+          </td>
+          <td class="td-price con">
+            <span class="price-mo">$42,000</span>
+            <span class="price-setup">$25,000 setup</span>
+            <div class="price-note">Client-specific persona builds included. Voter file and modeling white-labeled for client delivery.</div>
+          </td>
+          <td class="td-price npo">
+            <span class="price-mo">$18,000</span>
+            <span class="price-setup">$10,000 setup</span>
+            <div class="price-note">Persona modeling built around member constituencies and policy issue alignment.</div>
+          </td>
+        </tr>
+
+        <!-- SECTION: ADD-ONS -->
+        <tr class="section-head">
+          <td></td><td colspan="4"><span class="section-label">Add-Ons &middot; Available on any tier</span></td>
+        </tr>
+
+        <!-- ADD-ON: MCP -->
+        <tr class="addon-row">
+          <td class="td-addon">
+            <div class="addon-name">MCP Server Access</div>
+            <div class="addon-desc">Direct integration of platform data into client AI workflows via Model Context Protocol. Enables real-time data queries, stakeholder scoring, and legislative monitoring within client tools.</div>
+          </td>
+          <td class="td-addon-price corp">$4,000</td>
+          <td class="td-addon-price pol">$2,500</td>
+          <td class="td-addon-price con">$3,500</td>
+          <td class="td-addon-price npo">$1,500</td>
+        </tr>
+
+        <!-- ADD-ON: AI BOT -->
+        <tr class="addon-row">
+          <td class="td-addon">
+            <div class="addon-name">Anthropic AI Assistant</div>
+            <div class="addon-desc">Dedicated AI agent trained on platform data and client context. Answers stakeholder intelligence queries, drafts issue briefs, and synthesizes sentiment shifts in plain language for government affairs and executive teams.</div>
+          </td>
+          <td class="td-addon-price corp">$3,000</td>
+          <td class="td-addon-price pol">$2,000</td>
+          <td class="td-addon-price con">$2,500</td>
+          <td class="td-addon-price npo">$1,200</td>
+        </tr>
+
+        <!-- ADD-ON: GRASSROOTS -->
+        <tr class="addon-row">
+          <td class="td-addon">
+            <div class="addon-name">Grassroots Campaign</div>
+            <div class="addon-desc">Full grassroots campaign design, build, and activation anchored to platform sentiment and stakeholder data. Includes audience targeting, message testing, and coalition mobilization strategy. One-time engagement.</div>
+          </td>
+          <td class="td-addon-price corp"><span class="price-mo">$100,000</span><span class="price-setup">one-time</span></td>
+          <td class="td-addon-price pol"><span class="price-mo">$100,000</span><span class="price-setup">one-time</span></td>
+          <td class="td-addon-price con"><span class="price-mo">$100,000</span><span class="price-setup">one-time</span></td>
+          <td class="td-addon-price npo"><span class="price-mo">$100,000</span><span class="price-setup">one-time</span></td>
+        </tr>
+
+        <!-- ADD-ON: SCORECARD -->
+        <tr class="addon-row">
+          <td class="td-addon">
+            <div class="addon-name">Consortium Scorecard</div>
+            <div class="addon-desc">Bloomberg Cities-style scorecard program delivered through trade associations or client coalitions. Aligns grassroots sentiment with policymaker performance across cities and regions. Generates continuous longitudinal signal and publishable advocacy outputs.</div>
+          </td>
+          <td class="td-addon-price corp"><span class="price-mo">$5,000</span><span class="price-setup">$40,000 build</span></td>
+          <td class="td-addon-price pol"><span class="price-mo">$5,000</span><span class="price-setup">$40,000 build</span></td>
+          <td class="td-addon-price con"><span class="price-mo">$5,000</span><span class="price-setup">$40,000 build</span></td>
+          <td class="td-addon-price npo"><span class="price-mo">$5,000</span><span class="price-setup">$40,000 build</span></td>
+        </tr>
+
+        <!-- ADD-ON: STAKEHOLDER MANAGEMENT -->
+        <tr class="addon-row">
+          <td class="td-addon">
+            <div class="addon-name">Stakeholder Management System</div>
+            <div class="addon-desc">Dynamic modeling platform that scores and maps stakeholders by sentiment, economic exposure, policy position, and movement over time. Dashboard-driven, low analyst overhead. Tells teams where pressure is forming and who is moveable before they walk into a room.</div>
+          </td>
+          <td class="td-addon-price corp"><span class="price-mo">$12,500</span><span class="price-setup">$175,000 build</span></td>
+          <td class="td-addon-price pol"><span class="price-mo">$12,500</span><span class="price-setup">$175,000 build</span></td>
+          <td class="td-addon-price con"><span class="price-mo">$12,500</span><span class="price-setup">$175,000 build</span></td>
+          <td class="td-addon-price npo"><span class="price-mo">$12,500</span><span class="price-setup">$175,000 build</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NOTES -->
+  <div class="note">
+    <div class="note-label">Pricing Notes</div>
+    <div class="note-grid">
+      <div class="note-item"><strong>Annual commitment required.</strong> All tiers priced on a 12-month contract. Month-to-month available at 25% premium on request.</div>
+      <div class="note-item"><strong>Consulting white-label rights</strong> cover delivery to up to 3 named client accounts at base tier. Additional accounts at $1,500/mo each.</div>
+      <div class="note-item"><strong>Setup covers</strong> platform onboarding, data integration, initial persona configuration, and one 90-minute team training session.</div>
+      <div class="note-item"><strong>Polling waves</strong> are nationally representative, 1,500 respondents, 15-minute instrument. Additional oversamples by geography or demographic available at cost.</div>
+      <div class="note-item"><strong>Non-profit pricing</strong> applies to verified 501(c)(3) and 501(c)(6) organizations. Academic institutions qualify at non-profit rates.</div>
+      <div class="note-item"><strong>Political cycle terms:</strong> campaigns and party committees may license on an 18-month election cycle rather than calendar year. Contact for structure.</div>
+    </div>
+  </div>
+
+  <!-- ACV SUMMARY -->
+  <div style="margin-top: 2rem;">
+    <div style="border-bottom: 1px solid var(--rule); padding-bottom: .75rem; margin-bottom: 1rem; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: .5rem;">
+      <div>
+        <div style="font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace;">Annual Contract Value</div>
+        <div style="font-size: 15px; font-weight: 600; margin-top: 3px;">Annual Contract Value &middot; Portfolio Scenarios</div>
+      </div>
+      <div style="font-size: 11px; color: var(--ink-light); text-align: right; line-height: 1.5;">One tier per client. Add-ons are optional and layered on top.<br>One-time costs counted in year one only.</div>
+    </div>
+
+    <div class="matrix-wrap" style="margin-bottom: 1rem;">
+      <table>
+        <colgroup>
+          <col class="col-tier">
+          <col class="col-buyer">
+          <col class="col-buyer">
+          <col class="col-buyer">
+          <col class="col-buyer">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-tier"></th>
+            <th class="th-corp">Corporate</th>
+            <th class="th-pol">Political</th>
+            <th class="th-con">Consulting</th>
+            <th class="th-npo">Non-Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="section-head">
+            <td></td><td colspan="4"><span class="section-label">Full Platform · Subscription only</span></td>
+          </tr>
+          <tr class="data-row">
+            <td class="td-tier">
+              <div class="tier-name">Monthly</div>
+            </td>
+            <td class="td-price corp"><span class="price-mo">$48,000</span></td>
+            <td class="td-price pol"><span class="price-mo">$48,000</span></td>
+            <td class="td-price con"><span class="price-mo">$42,000</span></td>
+            <td class="td-price npo"><span class="price-mo">$18,000</span></td>
+          </tr>
+          <tr class="data-row">
+            <td class="td-tier">
+              <div class="tier-name">Annual ARR</div>
+            </td>
+            <td class="td-price corp"><span class="price-mo">$576,000</span></td>
+            <td class="td-price pol"><span class="price-mo">$576,000</span></td>
+            <td class="td-price con"><span class="price-mo">$504,000</span></td>
+            <td class="td-price npo"><span class="price-mo">$216,000</span></td>
+          </tr>
+          <tr class="data-row">
+            <td class="td-tier">
+              <div class="tier-name">Year One</div>
+              <div class="tier-includes">ARR + setup</div>
+            </td>
+            <td class="td-price corp"><span class="price-mo">$611,000</span></td>
+            <td class="td-price pol"><span class="price-mo">$591,000</span></td>
+            <td class="td-price con"><span class="price-mo">$529,000</span></td>
+            <td class="td-price npo"><span class="price-mo">$226,000</span></td>
+          </tr>
+
+          <tr class="section-head">
+            <td></td><td colspan="4"><span class="section-label">Full Platform + Stakeholder Management System</span></td>
+          </tr>
+          <tr class="data-row">
+            <td class="td-tier">
+              <div class="tier-name">Year One</div>
+              <div class="tier-includes">ARR + setup + SMS build + SMS monthly</div>
+            </td>
+            <td class="td-price corp" style="background: var(--corp-pale);"><span class="price-mo" style="font-weight: 700;">$936,000</span></td>
+            <td class="td-price pol" style="background: var(--pol-pale);"><span class="price-mo" style="font-weight: 700;">$916,000</span></td>
+            <td class="td-price con" style="background: var(--con-pale);"><span class="price-mo" style="font-weight: 700;">$854,000</span></td>
+            <td class="td-price npo" style="background: var(--npo-pale);"><span class="price-mo" style="font-weight: 700;">$451,000</span></td>
+          </tr>
+          <tr class="data-row">
+            <td class="td-tier">
+              <div class="tier-name">Year Two+</div>
+              <div class="tier-includes">ARR + SMS monthly · no builds required</div>
+            </td>
+            <td class="td-price corp"><span class="price-mo">$726,000</span></td>
+            <td class="td-price pol"><span class="price-mo">$726,000</span></td>
+            <td class="td-price con"><span class="price-mo">$654,000</span></td>
+            <td class="td-price npo"><span class="price-mo">$366,000</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div class="note-label">ACV Notes</div>
+      <div class="note-grid">
+        <div class="note-item"><strong>One tier per client.</strong> Base, Polling, and Full are mutually exclusive. A client selects one and may add optional services on top.</div>
+        <div class="note-item"><strong>SMS year one</strong> includes the $175,000 build plus $12,500 x 12 in monthly subscription. Year two drops the build cost.</div>
+        <div class="note-item"><strong>Four corporate full-platform clients</strong> with no add-ons generates $2.3M ARR. That funds the entire Phase 3 data stack with margin.</div>
+        <div class="note-item"><strong>Recurring revenue</strong> is the ARR line plus monthly add-on subscriptions. Setup and build fees are year-one upside, not the base investors should model.</div>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top: 1rem;">
+      <div class="note-label">Portfolio Scenarios &middot; ARR at Scale</div>
+      <div class="note-grid">
+        <div class="note-item"><strong>Conservative · 5 clients.</strong> Two corporate full platform, one political polling, one consulting base, one non-profit base. Year one ACV: ~$2.1M. Year two ARR: ~$1.8M.</div>
+        <div class="note-item"><strong>Base case · 10 clients.</strong> Four corporate full platform, two political polling, two consulting full, two non-profit polling. Year one ACV: ~$5.2M. Year two ARR: ~$4.6M.</div>
+        <div class="note-item"><strong>Upside · 20 clients.</strong> Eight corporate full platform, four political full, four consulting full, four non-profit polling. Year one ACV: ~$11.4M. Year two ARR: ~$10.1M. Data stack fully funded by client three.</div>
+        <div class="note-item"><strong>At any scenario</strong> the Phase 3 data stack ($445K&ndash;$1.15M annually) is covered by a single corporate full-platform client in year two. Every client after that is margin.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

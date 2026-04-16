@@ -1,0 +1,685 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connected Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --page: #f5f4f0;
+  --ink: #111110;
+  --ink-mid: #4a4a47;
+  --ink-light: #888880;
+  --rule: #d9d9d9;
+}
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--page);
+  color: var(--ink);
+  padding: 2rem;
+}
+.wrap { max-width: 920px; margin: 0 auto; }
+.doc-header {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.doc-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-light);
+  font-family: 'IBM Plex Mono', monospace; margin-bottom: 4px;
+}
+.doc-title { font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+svg { width: 100%; height: auto; display: block; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes drawSpoke {
+  from { stroke-dashoffset: 350; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes nodeAppear {
+  from { opacity: 0; r: 0; }
+  to   { opacity: 1; }
+}
+@keyframes deployRing {
+  0%   { stroke-dashoffset: 2200; opacity: 0; }
+  15%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes deployPulse {
+  0%   { r: 332; opacity: 0; }
+  20%  { opacity: 0.25; }
+  100% { r: 370; opacity: 0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="doc-header">
+    <div>
+      <div class="doc-eyebrow">How It Works</div>
+      <div class="doc-title">Our Stack Unifies Your Intelligence &amp; Deployment</div>
+    </div>
+  </div>
+  <svg id="viz" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- NARRATIVE SECTION -->
+  <div style="margin-top: 4rem; padding-top: 2.5rem;">
+
+    <div style="margin-bottom: 2.5rem;">
+      <div style="font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-light); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px;">How It Works</div>
+      <div style="font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; border-bottom: 1px solid var(--rule); padding-bottom: 1rem;">How Our Stack Changes the Way Your Organization Operates</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 3rem; max-width: 860px;">
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">The Industry Setup</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75; margin-bottom: 10px;">Enterprise AI's revenue model depends on selling headcount reduction to large organizations. That is the disclosed logic of the category. It has created enormous resistance inside the organizations being sold to and has delivered almost no measurable value to the departments that run the relationship between a company and the world it operates in.</p>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">Even before the move to AI, companies' public affairs and external engagement were already costly and highly siloed. Different data sets, gaps in data-driven decisionmaking, and duplicative strategies already created friction and reduced efficiency.</p>
+      </div>
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">The Problem We Are Solving</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">Every major company has at least seven departments — including government affairs, communications, marketing, legal and regulatory, community relations, branding, public affairs — and close to twenty different functions all paying separately for a version of the same intelligence. Each with different vendors, different timelines, different analytical frameworks, no shared data. Every consultant in the room bills your company to navigate this difficult dynamic. Often times, the decisions coming out of that process are slower, difficult to implement, and more expensive than they need to be. When they lack the data foundation, those decisions almost always carry some level of liability.</p>
+      </div>
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">What We Built</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75; margin-bottom: 10px;">What we built is not a new tool for any one of these departments. It is the shared intelligence infrastructure that all of them have been missing. A single proprietary data lake, continuously enriched by licensed data across financial behavior, labor market movement, consumer patterns, geographic and demographic variables, legislative tracking, and social determinants. One longitudinal model that compounds in value every cycle it runs. One contract that replaces the fragmented vendor stack that currently serves those departments separately and expensively.</p>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">The result is something none of those departments have had access to before: a unified read on the environment they are all operating in, built from the same data, updated in the same cadence, and accessible to every function that touches public-facing risk, stakeholder relationships, and license to operate. The government affairs team, the communications team, the marketing team, and legal are working from the same ground truth for the first time.</p>
+      </div>
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">The People Argument</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75; margin-bottom: 10px;">This platform does not simply eliminate teams. It makes your people more capable of something they weren't before. A government affairs team of five operating on this stack does the work that previously required fifteen people and three consulting retainers. That is a status upgrade for the people in the room, not a threat. It is also the honest version of the productivity argument that enterprise AI has been making dishonestly for three years.</p>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">The unified intelligence created by unifying data into one database and voter file generates powerful opportunities and simplifies the work that was often siloed and over the horizon from teams struggling to make decisions that impact stakeholders, your company's license to operate, and your public credibility.</p>
+      </div>
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">The Pricing Argument</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">The question is not whether the contract is expensive. The question is what it replaces. When you add up the fragmented subscriptions, the consulting retainers, the research headcount, and the vendor management overhead across five or six departments, this platform is not a cost increase. Allocated across the departments it serves simultaneously, the per-unit cost and replacement of those fragmented consultants and subscriptions is often a net savings.</p>
+      </div>
+
+      <div>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">The Timing Argument</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">The agentic AI shift is happening now and the organizations who own the intelligence infrastructure going into it will define the terms of how the transition is navigated. The window to be the standard is open. It closes when someone else builds it.</p>
+      </div>
+
+      <div style="grid-column: 1 / -1; border-top: 1px solid var(--rule); padding-top: 1.5rem;">
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px;">Building Longitudinal Value</div>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75; margin-bottom: 10px;">Our data lake compounds every cycle it runs, enriching the user's intelligence and deployment strategy. The longer a user is on our platform the more predictive and defensible the model becomes and the harder it is to leave.</p>
+        <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.75;">The reconciliation overhead that currently consumes planning cycles disappears when the intelligence layer is shared. Two departments, different data, different conclusions, and a consultant billing to bridge the gap becomes one team working from the same ground truth. Decisions move faster because the lag between what is happening in the environment and what the organization knows about it collapses. Every cycle the data lake runs, the model grows more accurate, the outputs grow more predictive, and the cost of switching out rises. External intelligence stops behaving like a cost center and starts compounding like a strategic asset.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const svg = document.getElementById('viz');
+const ns = 'http://www.w3.org/2000/svg';
+const CX = 450, CY = 455;
+
+function el(tag, attrs={}) {
+  const e = document.createElementNS(ns, tag);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  return e;
+}
+function grp(attrs={}) { return el('g', attrs); }
+
+// Departments clockwise from upper-right
+const depts = [
+  { lines: ['Sales'] },
+  { lines: ['Marketing'] },
+  { lines: ['Advertising'] },
+  { lines: ['Government', 'Affairs'] },
+  { lines: ['Policy &', 'Regulatory'] },
+  { lines: ['Political', 'Action'] },
+  { lines: ['Legal'] },
+  { lines: ['Thought', 'Leadership'] },
+  { lines: ['Communications'] },
+  { lines: ['Crisis', 'Response'] },
+  { lines: ['Community', 'Relations'] },
+  { lines: ['Digital Content', 'Creation'] },
+  { lines: ['Sustainability'] },
+  { lines: ['Foundation &', 'Giving'] },
+  { lines: ['Strategy'] },
+  { lines: ['Analytics'] },
+];
+
+const N = 16;
+const START = -78.75 * Math.PI / 180;
+const STEP  =  22.5  * Math.PI / 180;
+
+// Radii
+const R_CORE   = 50;   // voter file core
+const R_SM     = 89;   // stakeholder mapping (1.5× band width)
+const R_CB     = 127;  // community base
+const R_CI     = 172;  // consumer intelligence
+const R_PS     = 216;  // polling & survey
+const R_SP   = 263;  // segmentation & personas
+const R_BM_OUT = 315;  // brand & messaging outer (star)
+const R_BM_IN  = 287;  // brand & messaging inner (star concave)
+const R_SPOKE  = 315;  // spoke tip / node center
+const R_LABEL  = 377;  // label radius
+const R_DEPLOY = 353;  // deployment ring
+
+// Layer colors
+const layers = [];
+
+// Blue spoke colors cycling through stack palette
+const spokeColors = [
+  '#7aaec8','#6ca0bc','#5a8fae','#4d8faa',
+  '#3d7090','#326080','#2d5570','#264a62',
+  '#3d7090','#5a8fae','#7aaec8','#6ca0bc',
+  '#4d8faa','#3d7090','#2d5570','#5a8fae',
+];
+
+// ----- DEFS -----
+const defs = el('defs');
+
+// Core gradient
+const coreGrad = el('radialGradient', {id:'coreGrad',cx:'40%',cy:'35%',r:'60%'});
+coreGrad.appendChild(el('stop',{offset:'0%','stop-color':'#2d5570'}));
+coreGrad.appendChild(el('stop',{offset:'100%','stop-color':'#0f1e2e'}));
+defs.appendChild(coreGrad);
+
+// SM ring gradient
+const smGrad = el('radialGradient', {id:'smGrad',cx:'50%',cy:'50%',r:'50%'});
+smGrad.appendChild(el('stop',{offset:'60%','stop-color':'transparent'}));
+smGrad.appendChild(el('stop',{offset:'100%','stop-color':'rgba(45,85,112,0.1)'}));
+defs.appendChild(smGrad);
+
+svg.appendChild(defs);
+
+// ----- BACKGROUND RINGS (subtle grid) -----
+const bg = grp({'opacity':'1'});
+[R_SM, R_CB, R_CI, R_PS, R_SP, R_BM_OUT].forEach(r => {
+  bg.appendChild(el('circle',{cx:CX,cy:CY,r,
+    fill:'none',stroke:'rgba(60,60,55,0.07)','stroke-width':'0.5'}));
+});
+svg.appendChild(bg);
+
+// ----- TIMING SETUP -----
+// Ring animations: 0.3s each, staggered 0.5s apart
+// Spokes: start at 2.8s, 0.22s apart
+// Deploy: after last spoke + 0.4s
+
+const ringDelay = (i) => 0.2 + i * 0.45;
+const spokeDelay = (i) => 2.8 + i * 0.22;
+const deployDelay = spokeDelay(N - 1) + 0.5;
+
+// ----- STACK LAYER RINGS -----
+layers.forEach(({r, color}, i) => {
+  const g = grp();
+  const delay = ringDelay(i);
+  const circle = el('circle',{
+    cx:CX, cy:CY, r,
+    fill: color, 'fill-opacity':'0.06',
+    stroke: color, 'stroke-width':'1.5', 'stroke-opacity':'0.5',
+  });
+  circle.style.opacity = '0';
+  circle.style.animation = `fadeIn 0.5s ${delay}s ease both`;
+  g.appendChild(circle);
+  svg.appendChild(g);
+});
+
+// ----- BRAND & MESSAGING STAR (incomplete ring) -----
+function buildStarPath(reaches, R_OUT, R_IN, R_CIRCLE) {
+  const angle = i => START + i * STEP;
+  const rx = (i, r) => CX + r * Math.cos(angle(i));
+  const ry = (i, r) => CY + r * Math.sin(angle(i));
+
+  // Start at first reaching spoke
+  let startI = 0;
+  for (let k = 0; k < N; k++) { if (reaches.has(k)) { startI = k; break; } }
+
+  let d = `M ${rx(startI, R_OUT).toFixed(1)},${ry(startI, R_OUT).toFixed(1)} `;
+
+  let i = startI;
+  for (let step = 0; step < N; step++) {
+    const next = (i + 1) % N;
+    if (reaches.has(i) && reaches.has(next)) {
+      // Both reach — petal dip Q bezier
+      const midA = angle(i) + STEP / 2;
+      const ix = CX + R_IN * Math.cos(midA);
+      const iy = CY + R_IN * Math.sin(midA);
+      d += `Q ${ix.toFixed(1)},${iy.toFixed(1)} ${rx(next, R_OUT).toFixed(1)},${ry(next, R_OUT).toFixed(1)} `;
+      i = next;
+    } else if (reaches.has(i) && !reaches.has(next)) {
+      // Start of a skip run — find the next reaching spoke
+      let j = next;
+      while (!reaches.has(j)) j = (j + 1) % N;
+      // Draw ONE straight line to that next reaching spoke
+      d += `L ${rx(j, R_OUT).toFixed(1)},${ry(j, R_OUT).toFixed(1)} `;
+      // Advance step count by the number of spokes skipped
+      const skipped = ((j - i + N) % N);
+      step += skipped - 1;
+      i = j;
+    } else {
+      i = next;
+    }
+  }
+  return d + 'Z';
+}
+
+function starPath() {
+  const reaches = new Set([0,1,2,3,5,6,7,8,9,10,11,12,13,14,15]);
+  const R_CIRCLE = (R_SP + R_BM_OUT) / 2;
+  return buildStarPath(reaches, R_BM_OUT, R_BM_IN, R_CIRCLE);
+}
+
+const starG   = grp({id:'ring-bm'});
+const starP = el('path',{
+  d: starPath(),
+  fill:'rgba(122,174,200,0.06)',
+  stroke:'#7aaec8','stroke-width':'1.5','stroke-opacity':'0.55',
+  'stroke-linejoin':'round',
+});
+starP.style.opacity = '0';
+starP.style.animation = `fadeIn 0.6s ${ringDelay(4)}s ease both`;
+starG.appendChild(starP);
+svg.appendChild(starG);
+
+// ----- SEGMENTATION & PERSONAS SELECTIVE STAR -----
+// Reaches: Sales(0),Marketing(1),Advertising(2),GovtAffairs(3),PoliticalAction(5),
+//          Communications(8),CrisisResponse(9),CommunityRelations(10),Digital(11),Strategy(14),Research(15)
+// Does NOT reach: Policy&Reg(4),Legal(6),ThoughtLeadership(7),Sustainability(12),Foundation(13)
+function spStarPath() {
+  const spReaches = new Set([0,1,2,3,5,8,9,10,11,14,15]);
+  const R_SP_CIRCLE = (R_PS + R_SP) / 2;
+  const R_SP_IN = R_SP - 14;
+  return buildStarPath(spReaches, R_SP, R_SP_IN, R_SP_CIRCLE);
+}
+const spStarG = grp({id:'ring-sp'});
+const spStarP = el('path',{
+  d: spStarPath(),
+  fill:'rgba(90,143,174,0.06)',
+  stroke:'#5a8fae','stroke-width':'1.5','stroke-opacity':'0.5',
+  'stroke-linejoin':'round',
+});
+spStarP.style.opacity = '0';
+spStarP.style.animation = `fadeIn 0.6s ${ringDelay(3)}s ease both`;
+spStarG.appendChild(spStarP);
+svg.appendChild(spStarG);
+
+// ----- POLLING & SURVEY SELECTIVE STAR -----
+// NOT reaching: Legal (6)
+function psStarPath() {
+  const psReaches = new Set([0,1,2,3,4,5,7,8,9,10,11,12,13,14,15]);
+  const R_PS_IN = R_PS - 14;
+  const R_PS_CIRCLE = (R_CI + R_PS) / 2;
+  return buildStarPath(psReaches, R_PS, R_PS_IN, R_PS_CIRCLE);
+}
+const psStarG = grp({id:'ring-ps'});
+const psStarP = el('path',{
+  d: psStarPath(),
+  fill:'rgba(61,112,144,0.06)',
+  stroke:'#3d7090','stroke-width':'1.5','stroke-opacity':'0.5',
+  'stroke-linejoin':'round',
+});
+psStarP.style.opacity = '0';
+psStarP.style.animation = `fadeIn 0.6s ${ringDelay(2)}s ease both`;
+psStarG.appendChild(psStarP);
+svg.appendChild(psStarG);
+
+// ----- CONSUMER INTELLIGENCE SELECTIVE STAR -----
+// NOT reaching: Legal(6), Thought Leadership(7), Crisis Response(9)
+function ciStarPath() {
+  const ciReaches = new Set([0,1,2,3,5,8,10,11,12,13,14,15]);
+  const R_CI_IN = R_CI - 14;
+  const R_CI_CIRCLE = (R_CB + R_CI) / 2;
+  return buildStarPath(ciReaches, R_CI, R_CI_IN, R_CI_CIRCLE);
+}
+const ciStarG = grp({id:'ring-ci'});
+const ciStarP = el('path',{
+  d: ciStarPath(),
+  fill:'rgba(45,85,112,0.06)',
+  stroke:'#2d5570','stroke-width':'1.5','stroke-opacity':'0.5',
+  'stroke-linejoin':'round',
+});
+ciStarP.style.opacity = '0';
+ciStarP.style.animation = `fadeIn 0.6s ${ringDelay(1)}s ease both`;
+ciStarG.appendChild(ciStarP);
+svg.appendChild(ciStarG);
+
+// ----- COMMUNITY BASE SELECTIVE STAR — all 16 spokes -----
+function cbStarPath() {
+  const cbReaches = new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+  const R_CB_IN = R_CB - 14;
+  const R_CB_CIRCLE = (R_SM + R_CB) / 2;
+  return buildStarPath(cbReaches, R_CB, R_CB_IN, R_CB_CIRCLE);
+}
+const cbStarG = grp({id:'ring-cb'});
+const cbStarP = el('path',{
+  d: cbStarPath(),
+  fill:'rgba(30,58,82,0.06)',
+  stroke:'#1e3a52','stroke-width':'1.5','stroke-opacity':'0.5',
+  'stroke-linejoin':'round',
+});
+cbStarP.style.opacity = '0';
+cbStarP.style.animation = `fadeIn 0.6s ${ringDelay(0)}s ease both`;
+cbStarG.appendChild(cbStarP);
+svg.appendChild(cbStarG);
+
+// ----- RING INTERSECTION DOTS — grouped with their ring for hover targeting -----
+const ringDotData = [
+  { grp: cbStarG, r: R_CB,     color: '#1e3a52', reaches: new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]) },
+  { grp: ciStarG, r: R_CI,     color: '#2d5570', reaches: new Set([0,1,2,3,5,8,10,11,12,13,14,15]) },
+  { grp: psStarG, r: R_PS,     color: '#3d7090', reaches: new Set([0,1,2,3,4,5,7,8,9,10,11,12,13,14,15]) },
+  { grp: spStarG, r: R_SP,     color: '#5a8fae', reaches: new Set([0,1,2,3,5,8,9,10,11,14,15]) },
+  { grp: starG,   r: R_BM_OUT, color: '#7aaec8', reaches: new Set([0,1,2,3,5,6,7,8,9,10,11,12,13,14,15]) },
+];
+
+ringDotData.forEach(({ grp: g, r, color, reaches }) => {
+  reaches.forEach(i => {
+    const angle = START + i * STEP;
+    const dot = el('circle', {
+      cx: (CX + r * Math.cos(angle)).toFixed(1),
+      cy: (CY + r * Math.sin(angle)).toFixed(1),
+      r: '2.5', fill: color, 'fill-opacity': '0.45',
+    });
+    g.appendChild(dot);
+  });
+});
+
+// ----- RING HOVER INTERACTION -----
+const ringIds = ['ring-cb','ring-ci','ring-ps','ring-sp','ring-bm'];
+const ringEls = ringIds.map(id => document.getElementById(id));
+
+// CSS transition on all ring groups
+ringEls.forEach(g => {
+  g.style.transition = 'opacity 0.35s ease, filter 0.35s ease';
+  g.style.cursor = 'pointer';
+  g.style.opacity = '0.72';
+
+  g.addEventListener('mouseenter', () => {
+    ringEls.forEach(other => {
+      if (other !== g) {
+        other.style.opacity = '0.1';
+        other.style.filter = 'grayscale(1)';
+      } else {
+        other.style.opacity = '1';
+        other.style.filter = 'none';
+      }
+    });
+  });
+
+  g.addEventListener('mouseleave', () => {
+    ringEls.forEach(other => {
+      other.style.opacity = '0.72';
+      other.style.filter = 'none';
+    });
+  });
+});
+
+// ---- RING LABELS — arched textPath, arc at (midR - fontSize/2) so text centers in band
+// CW arc at top — default SVG renders text ABOVE arc (away from center)
+// Arc radius = midR - fontSize/2 → text center lands exactly at midR ✓
+const FS_RING = 10;
+const ringArcs = [
+  { id:'ra-sm', outerR:R_SM,     innerR:R_CORE, name:'STAKEHOLDERS',            color:'#a84040', delay: ringDelay(-0.5)+0.25 },
+  { id:'ra-cb', outerR:R_CB,     innerR:R_SM,   name:'COMMUNITY BASE',          color:'#1e3a52', delay: ringDelay(0)+0.25 },
+  { id:'ra-ci', outerR:R_CI,     innerR:R_CB,   name:'CONSUMER INTELLIGENCE',   color:'#2d5570', delay: ringDelay(1)+0.25 },
+  { id:'ra-ps', outerR:R_PS,     innerR:R_CI,   name:'POLLING & SURVEY',        color:'#3d7090', delay: ringDelay(2)+0.25 },
+  { id:'ra-sp', outerR:R_SP,     innerR:R_PS,   name:'SEGMENTATION & PERSONAS', color:'#5a8fae', delay: ringDelay(3)+0.25, nudge:1 },
+  { id:'ra-bm', outerR:R_BM_OUT, innerR:R_SP,   name:'BRAND & MESSAGING',       color:'#7aaec8', delay: ringDelay(4)+0.25, nudge:3 },
+];
+
+// Map arc id to the group it belongs to (sm appends directly to svg, others to their star group)
+const ringLabelTargets = {
+  'ra-cb': cbStarG,
+  'ra-ci': ciStarG,
+  'ra-ps': psStarG,
+  'ra-sp': spStarG,
+  'ra-bm': starG,
+};
+
+ringArcs.forEach(({ id, outerR, innerR, name, color, delay, nudge=0 }) => {
+  const midR  = (outerR + innerR) / 2;
+  const arcR  = midR - FS_RING / 2 - nudge;
+  const textW = name.length * 9.0;
+  const spanRad = Math.max(textW / arcR * 1.2, 0.45);
+  const half  = spanRad / 2;
+  const topA  = -Math.PI / 2;
+  const sx = CX + arcR * Math.cos(topA - half);
+  const sy = CY + arcR * Math.sin(topA - half);
+  const ex = CX + arcR * Math.cos(topA + half);
+  const ey = CY + arcR * Math.sin(topA + half);
+  const pathEl = el('path', { id, fill:'none',
+    d:`M ${sx.toFixed(1)},${sy.toFixed(1)} A ${arcR.toFixed(1)},${arcR.toFixed(1)},0,0,1,${ex.toFixed(1)},${ey.toFixed(1)}` });
+  defs.appendChild(pathEl);
+  const textEl = el('text', {
+    fill: color,
+    'font-family': 'IBM Plex Mono, monospace',
+    'font-size': String(FS_RING),
+    'font-weight': '600',
+    'letter-spacing': '0.13em',
+    stroke: 'rgba(245,244,240,0.9)',
+    'stroke-width': '2',
+    'paint-order': 'stroke fill',
+    'text-rendering': 'geometricPrecision',
+  });
+  textEl.style.opacity = '0';
+  textEl.style.animation = `fadeIn 0.5s ${delay}s ease both`;
+  const tpEl = el('textPath', { href:`#${id}`, startOffset:'50%', 'text-anchor':'middle' });
+  tpEl.textContent = name;
+  textEl.appendChild(tpEl);
+  const target = ringLabelTargets[id] || svg;
+  target.appendChild(textEl);
+});
+
+// ----- SPOKES + NODES -----
+depts.forEach(({lines}, i) => {
+  const angle = START + i * STEP;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const sx = CX + R_SM   * cos, sy = CY + R_SM   * sin; // start at SM ring
+  const ex = CX + R_SPOKE * cos, ey = CY + R_SPOKE * sin; // end at node
+  const color = spokeColors[i];
+  const delay = spokeDelay(i);
+  const spokeLen = Math.sqrt((ex-sx)**2 + (ey-sy)**2);
+
+  // Spoke line
+  const line = el('line',{
+    x1:sx, y1:sy, x2:ex, y2:ey,
+    stroke: '#6ca0bc', 'stroke-width':'1.5', 'stroke-opacity':'0.4',
+    'stroke-dasharray': spokeLen,
+    'stroke-dashoffset': spokeLen,
+  });
+  line.style.animation = `drawSpoke 0.4s ${delay}s ease both`;
+  svg.appendChild(line);
+
+  // Node glow
+  const glow = el('circle',{cx:ex, cy:ey, r:14,
+    fill:'#d4b84a','fill-opacity':'0.18',
+    stroke:'#d4b84a','stroke-width':'0','stroke-opacity':'0',
+  });
+  glow.style.opacity = '0';
+  glow.style.animation = `fadeIn 0.3s ${delay+0.3}s ease both`;
+  svg.appendChild(glow);
+
+  // Node dot
+  const node = el('circle',{cx:ex, cy:ey, r:6,
+    fill:'#d4b84a',
+    stroke:'#f5f4f0','stroke-width':'2',
+  });
+  node.style.opacity = '0';
+  node.style.animation = `fadeIn 0.25s ${delay+0.25}s ease both`;
+  svg.appendChild(node);
+
+  // Labels — consistent visual gap from ring at every angle
+  // Gap = LABEL_GAP in the spoke direction, accounting for bounding-box projection
+  const lineH = 11.5;
+  const totalH = lines.length * lineH;
+  const LABEL_GAP = 18;
+  // Consistent distance from ring — same as bottom spoke at every angle
+  const rLabel = R_DEPLOY + LABEL_GAP + totalH / 2;
+  const lx = CX + rLabel * cos;
+  const ly = CY + rLabel * sin;
+  const anchor = 'middle';
+
+  const labelG = grp();
+  labelG.style.opacity = '0';
+  labelG.style.animation = `fadeIn 0.3s ${delay+0.35}s ease both`;
+
+  const startY = ly - totalH / 2;
+
+  lines.forEach((line, li) => {
+    const t = el('text',{
+      x: lx, y: startY + li * lineH,
+      'text-anchor': anchor,
+      'font-family': 'IBM Plex Sans, sans-serif',
+      'font-size': '10',
+      'font-weight': '500',
+      fill: '#2a2a28',
+    });
+    t.textContent = line;
+    labelG.appendChild(t);
+  });
+
+  svg.appendChild(labelG);
+});
+
+// ----- STAKEHOLDER MAPPING RING -----
+const smG = grp();
+const smCirc = el('circle',{cx:CX,cy:CY,r:R_SM,
+  fill:'rgba(180,70,70,0.08)',
+  stroke:'#a84040','stroke-width':'1.5','stroke-opacity':'0.55',
+});
+smCirc.style.opacity = '0';
+smCirc.style.animation = `fadeIn 0.5s ${ringDelay(-0.5)}s ease both`;
+smG.appendChild(smCirc);
+
+// SM label handled by ring textPath system below
+
+// ----- CORE CENTER -----
+const coreG = grp();
+
+const coreFill = el('circle',{cx:CX,cy:CY,r:R_CORE,
+  fill:'url(#coreGrad)',
+});
+coreFill.style.opacity = '0';
+coreFill.style.animation = `fadeIn 0.5s 0.1s ease both`;
+coreG.appendChild(coreFill);
+
+const coreStroke = el('circle',{cx:CX,cy:CY,r:R_CORE,
+  fill:'none',stroke:'#2d5570','stroke-width':'1.5','stroke-opacity':'0.7',
+});
+coreStroke.style.opacity = '0';
+coreStroke.style.animation = `fadeIn 0.5s 0.1s ease both`;
+coreG.appendChild(coreStroke);
+
+// Core labels
+[
+  {text: 'VOTER FILE', dy: -12},
+  {text: '+', dy: 1},
+  {text: 'CONSUMER', dy: 13},
+  {text: 'DATA', dy: 25},
+].forEach(({text, dy}) => {
+  const t = el('text',{
+    x: CX, y: CY + dy,
+    'text-anchor':'middle',
+    'font-family':'IBM Plex Mono, monospace',
+    'font-size':'8.5',
+    'font-weight':'500',
+    'letter-spacing':'0.07em',
+    fill:'rgba(255,255,255,0.85)',
+  });
+  t.textContent = text;
+  coreG.appendChild(t);
+});
+coreG.style.opacity = '0';
+coreG.style.animation = `fadeIn 0.5s 0.1s ease both`;
+// coreG appended last — see below
+
+// ----- DEPLOYMENT RING -----
+const circum = 2 * Math.PI * R_DEPLOY;
+const deployG = grp();
+
+const deployRing = el('circle',{
+  cx:CX, cy:CY, r:R_DEPLOY,
+  fill:'none',
+  stroke:'#3d7090','stroke-width':'1.5','stroke-opacity':'0.5',
+  'stroke-dasharray':`6 5`,
+});
+deployRing.style.opacity = '0';
+deployRing.style.animation = `fadeIn 0.6s ${deployDelay}s ease both`;
+deployG.appendChild(deployRing);
+
+// Unified deployment label — arched textPath above the deployment ring
+const deployArcR = R_DEPLOY + 55;  // arc sits 36px above ring, text reads clearly above spokes
+const deployTextW = 'UNIFIED DEPLOYMENT'.length * 9.0;
+const deploySpan = Math.max(deployTextW / deployArcR * 1.1, 0.4);
+const deployHalf = deploySpan / 2;
+const deployTopA = -Math.PI / 2;
+const dsx = CX + deployArcR * Math.cos(deployTopA - deployHalf);
+const dsy = CY + deployArcR * Math.sin(deployTopA - deployHalf);
+const dex = CX + deployArcR * Math.cos(deployTopA + deployHalf);
+const dey = CY + deployArcR * Math.sin(deployTopA + deployHalf);
+const deployPathEl = el('path', { id:'deploy-arc', fill:'none',
+  d:`M ${dsx.toFixed(1)},${dsy.toFixed(1)} A ${deployArcR.toFixed(1)},${deployArcR.toFixed(1)},0,0,1,${dex.toFixed(1)},${dey.toFixed(1)}` });
+defs.appendChild(deployPathEl);
+
+const deployTextEl = el('text', {
+  fill: '#3d7090',
+  'font-family': 'IBM Plex Mono, monospace',
+  'font-size': '10.5',
+  'font-weight': '600',
+  'letter-spacing': '0.14em',
+  'fill-opacity': '0.8',
+  'text-rendering': 'geometricPrecision',
+});
+deployTextEl.style.opacity = '0';
+deployTextEl.style.animation = `fadeIn 0.5s ${deployDelay+0.3}s ease both`;
+const deployTpEl = el('textPath', { href:'#deploy-arc', startOffset:'50%', 'text-anchor':'middle' });
+deployTpEl.textContent = 'UNIFIED DEPLOYMENT';
+deployTextEl.appendChild(deployTpEl);
+deployG.appendChild(deployTextEl);
+
+// Outward arrows at each node → deployment ring
+depts.forEach(({}, i) => {
+  const angle = START + i * STEP;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const ax = CX + (R_SPOKE + 10) * cos;
+  const ay = CY + (R_SPOKE + 10) * sin;
+  const bx = CX + (R_DEPLOY - 4) * cos;
+  const by = CY + (R_DEPLOY - 4) * sin;
+  const arrow = el('line',{
+    x1:ax,y1:ay,x2:bx,y2:by,
+    stroke:'#6ca0bc','stroke-width':'1','stroke-opacity':'0.4',
+  });
+  arrow.style.opacity = '0';
+  arrow.style.animation = `fadeIn 0.4s ${deployDelay+0.1}s ease both`;
+  deployG.appendChild(arrow);
+});
+
+svg.appendChild(deployG);
+
+// Pulsing outer ring (deploy wave effect)
+const pulse1 = el('circle',{cx:CX,cy:CY,r:R_DEPLOY,
+  fill:'none',stroke:'rgba(90,143,174,0.3)','stroke-width':'8',
+});
+pulse1.style.animation = `deployPulse 2s ${deployDelay+0.3}s ease-out infinite`;
+svg.appendChild(pulse1);
+svg.appendChild(smG);
+svg.appendChild(coreG);
+</script>
+</body>
+</html>

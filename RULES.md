@@ -238,6 +238,35 @@ Every record in the database must be traceable to a real source. Every test must
 
 The proof of concept is only worth something if it is real. A demo built on fabricated data is not a proof of concept. It is a liability.
 
+---
+
+## 17. Infrastructure Discipline
+
+No production deployment proceeds without observability instrumented, no data pipeline ships without quality tests, no secret enters production without rotation schedule documentation, and no schema change deploys without a corresponding test update. This codifies the Step 2.5 posture so it does not erode after initial setup.
+
+The concrete requirements:
+
+- **Observability.** Sentry, Axiom (or Baselime), and Langfuse are integrated before any ingestion code runs. If an integration is down, the deployment does not ship.
+- **Data quality tests.** Every ingestion script has a dbt test suite that runs after ingestion. Results are logged alongside record counts in `ingestion_runs`. A pipeline without tests does not ship.
+- **Secrets rotation.** Every credential that enters production has a rotation schedule documented in `NOTES.md`. A credential without a rotation schedule is not a production credential.
+- **Schema and test coupling.** A schema change without an updated test is not merged. If a column is added, the tests that reference that table are updated in the same change.
+
+---
+
+## 18. Methodology and Version Discipline
+
+Every score, every agent run, every MCP response writes the methodology version and model version that produced it. A score without a methodology version is a bug. An agent run without a model version is a bug. These are required fields, not optional metadata.
+
+The concrete requirements:
+
+- **`stakeholder_scores.methodology_version`** is required on every row. The version must reference a row in `methodology_versions` that was effective at the time the score was written.
+- **`agent_runs.claude_model_version`** is required on every row. The exact model string called (e.g., `claude-sonnet-4-20250514`) is logged, not a shortened alias or constant.
+- **`mcp_queries.claude_model_version`** is required on every row. Same discipline as `agent_runs`.
+- **Agent definitions declare their model.** Each agent declares the specific Claude model it targets. Model changes are deliberate decisions, documented in the agent definition, announced to clients. No automatic upgrades.
+- **Methodology documents are versioned in the repo.** The initial methodology document (v0.1) is published as a markdown file before the first score is written. Subsequent versions add a new row to `methodology_versions` and leave the prior row in place for historical interpretation.
+
+---
+
 ## 13. The Goal
 
 Every line of code written in this repo serves one purpose: proving the thesis in PIPELINE.md on public data before any paid acquisition is required. Phase 1 ends with a working proof of concept — database seeded, survey tool live, stakeholder mapping functional, MCP server deployed — ready for a first anchor client conversation.

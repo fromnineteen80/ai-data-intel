@@ -89,15 +89,18 @@ Build in this exact order. Each step depends on the one before it. After complet
 - Create Supabase project
 - Enable PostGIS: `create extension if not exists postgis;`
 - Enable UUID: `create extension if not exists "uuid-ossp";`
+- Enable pgvector: `create extension if not exists vector;` — needed for semantic search in later phases; costs nothing to enable now and avoids a migration later
+- Enable Supabase point-in-time recovery (PITR) on the production project (requires Pro tier)
 - Set up service role key for server-side ingestion — environment variable only, never in code
 - Configure: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `ANTHROPIC_API_KEY`
 
 **Pre-commit checklist — Step 1:**
-- [ ] PostGIS and UUID extensions confirmed active in Supabase dashboard
+- [ ] PostGIS, UUID, and pgvector extensions confirmed active in Supabase dashboard
+- [ ] Supabase PITR enabled on the production project
 - [ ] No credentials in code — all in environment variables
 - [ ] No fake or placeholder data anywhere
 - [ ] RULES.md reviewed — no violations
-- [ ] Commit: `[supabase] initialize project with PostGIS and UUID extensions`
+- [ ] Commit: `[supabase] initialize project with PostGIS, UUID, and pgvector extensions`
 
 ---
 
@@ -139,6 +142,43 @@ TBD columns in SCHEMA.md are deployed as-is — no columns are added until real 
 
 ---
 
+### Step 2.5 — Infrastructure Setup
+
+Nothing else can run reliably without this step. This is the single most important addition to the build. Stand up the operational backbone before any ingestion code runs.
+
+**Environments.** Stand up three environments from day one: development, staging, production. Each has its own Supabase project, its own Vercel deployment, its own secrets. Do not build into production directly.
+
+**Orchestration.** Configure orchestration through GitHub Actions scheduled workflows. Every ingestion script in Step 4 runs on a GitHub Actions schedule with logging to the `ingestion_runs` table.
+
+**Observability.** Instrument three services before any ingestion code runs:
+- Sentry — application error tracking
+- Axiom or Baselime — log aggregation
+- Langfuse — Claude API call observability
+
+**Data quality monitoring.** Install dbt in the repo. Every ingestion script in Step 4 has a dbt test suite that runs after ingestion and writes pass or fail results alongside the record counts in `ingestion_runs`. Minimum tests per source: record count check, schema check, value range check, null rate check.
+
+**Secrets management.** Vercel environment variables with a documented rotation schedule in `NOTES.md`. No credentials in code.
+
+**Backups.** Supabase point-in-time recovery requires the Pro tier minimum (enabled in Step 1). Add a weekly logical backup job that writes to a separate S3 bucket with one-year retention.
+
+**Testing infrastructure.** pytest for Python ingestion scripts. Vitest for TypeScript and Next.js code. Playwright for end-to-end tests of the survey tool when it ships.
+
+**CI/CD.** GitHub Actions runs the test suite, lints, and builds a preview environment on every pull request. Supabase migrations run through a migration workflow that previews against staging before applying to production.
+
+**Pre-commit checklist — Step 2.5:**
+- [ ] Three environments (dev, staging, prod) operational with separate Supabase projects
+- [ ] GitHub Actions scheduled workflows configured
+- [ ] Sentry, Axiom (or Baselime), and Langfuse integrated
+- [ ] dbt installed in repo with test structure
+- [ ] Secrets rotation schedule documented in NOTES.md
+- [ ] Supabase PITR enabled, weekly S3 backup job configured
+- [ ] pytest, Vitest, Playwright configured with smoke coverage
+- [ ] GitHub Actions CI running on every pull request
+- [ ] RULES.md reviewed — no violations
+- [ ] Commit: `[infra] environments, orchestration, observability, backups, testing, CI`
+
+---
+
 ### Step 3 — Geographic Foundation
 
 The geographic lookup is the backbone every ingestion pipeline and every survey submission depends on. Nothing else runs until this is complete and verified with real data.
@@ -176,6 +216,11 @@ The geographic lookup is the backbone every ingestion pipeline and every survey 
 All data is real. No fabricated or mocked records anywhere. If a source requires registration or an API key, log it in NOTES.md and wait for credentials before writing the ingestion script.
 
 For each source: download a real sample, inspect it, update SCHEMA.md with confirmed columns, write the migration, then write the ingestion script. This order is non-negotiable. Every script follows the ingestion pipeline pattern from RULES.md Rule 9 — upsert only, idempotent, logs to `ingestion_runs`, errors to `ingestion_errors`.
+
+Two additional requirements apply to every ingestion script in this step:
+
+- **Write `source_metadata` on every record.** The metadata describes the license, permitted uses, and attribution requirements for the source. Defined once per source in a constants file, written to every row from that source.
+- **Run dbt tests after every ingestion.** Results logged alongside record counts in `ingestion_runs`. A failed dbt test does not block the ingestion but is surfaced as a warning that requires review.
 
 **4a — Congress.gov API**
 - Register: https://api.congress.gov/sign-up/
@@ -259,6 +304,8 @@ For each source: download a real sample, inspect it, update SCHEMA.md with confi
 - [ ] Migration written and applied before ingestion script was written
 - [ ] Ingestion script uses upsert with conflict resolution on natural key
 - [ ] Every record has a resolved `congressional_district_id` — no unmatched records written
+- [ ] `source_metadata` populated on every record
+- [ ] dbt test suite runs after ingestion with pass/fail logged to `ingestion_runs`
 - [ ] Ingestion run logged to `ingestion_runs` with accurate record counts
 - [ ] Failed records logged to `ingestion_errors` with raw record preserved
 - [ ] No invented field names anywhere
@@ -291,6 +338,14 @@ The survey tool is the first client-facing product and the first deliverable for
 - Survey creation and publication requires `analyst` or above
 - Survey deletion requires `admin` or `owner`
 
+**Privacy and consent.** The survey tool is the first place the platform collects data from individuals, which means it is the first place privacy and consent requirements are binding. These items are blocking for the survey tool, not ongoing items.
+
+- **Privacy notice.** A plain-language privacy notice is published at the survey URL before the first submission. Notice covers what is collected, how it is used, how long it is retained, who has access, and how a respondent can exercise rights (access, correction, deletion).
+- **Consent mechanism.** A consent step before the first question. The consent text is version-controlled. The `survey_responses` record includes `consent_version` and `consent_text_hash` for every submission.
+- **Age confirmation.** A confirmation that the respondent is eighteen or older. Enforced before any question is shown. Failing confirmation redirects out of the survey. `age_confirmed_adult` is written to every `survey_responses` row.
+- **Consumer rights request intake.** A contact mechanism (email, form) visible on the privacy notice that lets respondents submit access, correction, and deletion requests. Requests write to the `subject_rights_requests` table.
+- **Cell suppression on the dashboard.** When survey results are displayed, any cohort with fewer than a minimum threshold (start at eleven, following CMS cell suppression standards) is suppressed from display. This prevents inadvertent reidentification of small cohorts.
+
 **Pre-commit checklist — Step 5:**
 - [ ] Submission writes atomically — response and enrichment in one transaction
 - [ ] Failed enrichment does not produce a stored response
@@ -300,6 +355,11 @@ The survey tool is the first client-facing product and the first deliverable for
 - [ ] Dashboard shows real data — no mock data
 - [ ] Auth gates correct for each action
 - [ ] Version history written on publish
+- [ ] Privacy notice published and linked from survey URL
+- [ ] Consent version control operational — `consent_version` and `consent_text_hash` written on every submission
+- [ ] Age confirmation enforced before first question
+- [ ] Consumer rights request intake form operational — writes to `subject_rights_requests`
+- [ ] Cell suppression threshold (minimum eleven) enforced on dashboard
 - [ ] RULES.md reviewed — no violations
 - [ ] Commit: `[survey] survey tool — create, publish, respond, dashboard`
 
@@ -313,6 +373,13 @@ The survey tool is the first client-facing product and the first deliverable for
 - Score written to `stakeholder_scores`, profile to `stakeholders`, interactions to `stakeholder_interactions`
 - No fabricated profiles, no placeholder scores
 
+**Methodology and accountability.**
+
+- **Methodology version written with every score.** Every write to `stakeholder_scores` includes the `methodology_version`. An initial methodology document (v0.1) is published as a markdown file in the repo before the first score is written. The document covers: inputs used, weighting approach, validation posture (which may be "pending initial validation" in Phase 1), and known limitations. The version is also inserted into `methodology_versions`.
+- **Model card.** A short model card for the sentiment scoring system lives alongside the methodology document. Covers intended use, inputs, known limitations, and validation status.
+- **Subject rights disclosure.** The stakeholder profile view includes a note that scored subjects can request an explanation or dispute inputs through the `subject_rights_requests` process.
+- **Cell suppression for aggregate outputs.** Same minimum-eleven threshold as the survey tool for any aggregate view derived from stakeholder data.
+
 **Auth:**
 - Create and score stakeholders: `analyst` or above
 - View stakeholder profiles: `viewer` or above
@@ -322,6 +389,11 @@ The survey tool is the first client-facing product and the first deliverable for
 - [ ] All stakeholder data sourced from real ingested records
 - [ ] No fabricated scores or placeholder profiles
 - [ ] Scores written to `stakeholder_scores` with `scored_by: agent`
+- [ ] Methodology v0.1 document published in repo and inserted into `methodology_versions`
+- [ ] Model card for sentiment scoring published
+- [ ] `methodology_version` written on every `stakeholder_scores` row
+- [ ] Subject rights disclosure visible on profile views
+- [ ] Cell suppression (minimum eleven) enforced on aggregate outputs
 - [ ] Auth gates correct per role
 - [ ] RULES.md reviewed — no violations
 - [ ] Commit: `[stakeholders] stakeholder mapping — search, score, profile`
@@ -344,6 +416,12 @@ The survey tool is the first client-facing product and the first deliverable for
 
 Each tool validates inputs before querying. Each tool has a precise single-sentence description. Tools do not call other tools.
 
+**Rate limiting, versioning, and model logging.**
+
+- **Rate limiting.** Upstash Redis with per-api-key rate limits. Limits tied to the subscription tier of the organization that owns the key. Configure generous defaults for Phase 1.
+- **Tool schema versioning.** Each MCP tool declares a schema version. Client integrations can pin to a version. Breaking changes require a new version.
+- **Model version logging.** Every MCP query logs the specific Claude model that served it, in `mcp_queries.claude_model_version`.
+
 **Pre-commit checklist — Step 7:**
 - [ ] Each tool does exactly one thing
 - [ ] Each tool validates inputs before any database query
@@ -351,6 +429,9 @@ Each tool validates inputs before querying. Each tool has a precise single-sente
 - [ ] API key authentication works — no unauthenticated queries reach the database
 - [ ] Every query logged to `mcp_queries`
 - [ ] No tool calls another tool
+- [ ] Upstash Redis integrated for rate limiting
+- [ ] Per-tool schema version declared and exposed
+- [ ] Claude model version logged on every MCP query
 - [ ] RULES.md reviewed — no violations
 - [ ] Commit: `[mcp] MCP server — {N} tools deployed`
 
@@ -370,11 +451,23 @@ Each agent is a defined task workflow. Defined inputs. Defined tool sequence. De
 
 All four agents log to `agent_runs` with status, duration, and token count. All output is sourced from real ingested records.
 
+**Model versioning, cost, budgets, and human review.**
+
+- **Model version pinning.** Each agent declares the specific Claude model it targets. The platform does not auto-upgrade agent model versions. A model change is a deliberate decision, documented in the agent definition, announced to clients. The exact model string is written to `agent_runs.claude_model_version` on every run.
+- **Cost tracking.** Every agent run logs tokens used (already in schema) and computed cost. Langfuse integration provides the granular per-call attribution.
+- **Budget enforcement.** Organizations have a per-day and per-month budget for agent runs. The agent runner checks the budget before invocation and fails gracefully if the budget is exhausted. Budget stored on `organizations.settings`.
+- **Human review markers.** For agents whose output is consequential (Stakeholder Scorer writing to `stakeholder_scores`, Survey Synthesis writing to `reports` as `survey_analysis`), the output includes a field indicating whether it has been human-reviewed or is auto-generated. Clients see this flag.
+
 **Pre-commit checklist — Step 8:**
 - [ ] Each agent has defined inputs, tool sequence, and output
 - [ ] Every agent run logged to `agent_runs`
 - [ ] No output from fabricated data — all sourced from real records
 - [ ] Output written to the correct table
+- [ ] Each agent declares specific Claude model version in its definition
+- [ ] `claude_model_version` written on every `agent_runs` row
+- [ ] Langfuse integration capturing per-run cost
+- [ ] Budget enforcement operational at organization level
+- [ ] Human-reviewed flag written on consequential agent outputs
 - [ ] RULES.md reviewed — no violations
 - [ ] Commit: `[agents] {agent_name} — {description}`
 

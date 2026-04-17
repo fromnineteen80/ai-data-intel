@@ -392,17 +392,21 @@ legislation (
   source                      text not null,    -- congress_gov, legiscan
   source_id                   text not null,    -- source's natural bill identifier, TBD field name
   congressional_district_id   text references congressional_districts(id),
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now(),
   unique(source, source_id)
 )
 
 legislative_votes (
-  id          uuid primary key default gen_random_uuid(),
-  bill_id     uuid references legislation(id),
+  id              uuid primary key default gen_random_uuid(),
+  bill_id         uuid references legislation(id),
   -- TBD: all columns after API inspection
-  raw         jsonb,
-  ingested_at timestamptz default now()
+  source_metadata jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
+  raw             jsonb,
+  ingested_at     timestamptz default now()
 )
 
 -- ─── CAMPAIGN FINANCE — FEC ───────────────────────────────────────────────────
@@ -413,15 +417,19 @@ fec_candidates (
   id                          uuid primary key default gen_random_uuid(),
   source_id                   text unique not null,  -- FEC candidate ID, TBD field name
   congressional_district_id   text references congressional_districts(id),
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
 
 fec_committees (
-  id          uuid primary key default gen_random_uuid(),
-  source_id   text unique not null,  -- FEC committee ID, TBD field name
-  raw         jsonb,
-  ingested_at timestamptz default now()
+  id              uuid primary key default gen_random_uuid(),
+  source_id       text unique not null,  -- FEC committee ID, TBD field name
+  source_metadata jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
+  raw             jsonb,
+  ingested_at     timestamptz default now()
 )
 
 fec_filings (
@@ -430,6 +438,8 @@ fec_filings (
   candidate_id                uuid references fec_candidates(id),
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after bulk file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -445,6 +455,8 @@ bls_workforce (
   source                      text not null,    -- CPS, QCEW, OEWS
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -457,6 +469,8 @@ acs_demographics (
   id                          uuid primary key default gen_random_uuid(),
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after API and PUMS file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -470,6 +484,8 @@ cdc_places (
   id                          uuid primary key default gen_random_uuid(),
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after API inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -478,6 +494,8 @@ cdc_svi (
   id                          uuid primary key default gen_random_uuid(),
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -491,6 +509,8 @@ hud_housing (
   id                          uuid primary key default gen_random_uuid(),
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -505,6 +525,8 @@ crime_data (
   source                      text not null,    -- NIBRS, NCVS
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -519,6 +541,8 @@ education_data (
   source                      text not null,    -- NCES, IPEDS, CRDC
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after file inspection
+  source_metadata             jsonb,
+  -- { "license": "public_domain", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -532,6 +556,8 @@ pew_benchmarks (
   dataset_name                text not null,    -- name of specific Pew dataset
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after microdata file inspection
+  source_metadata             jsonb,
+  -- { "license": "research_use_only", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -549,6 +575,8 @@ audience_segments (
   source                      text not null,    -- tunnl
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after Tunnl data inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -560,6 +588,8 @@ workforce_movement (
   source                      text not null,    -- revelio
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after Revelio data inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -574,6 +604,8 @@ voter_file (
   state_leg_lower_district_id       text references state_leg_districts_lower(id),
   precinct_id                       text references precincts(id),
   -- TBD: all data columns after vendor data inspection
+  source_metadata                   jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                               jsonb,
   ingested_at                       timestamptz default now()
 )
@@ -634,6 +666,8 @@ polling_responses (
   weight                numeric,
   demographic_data      jsonb,
   -- TBD: demographic variable columns on first wave data inspection
+  source_metadata       jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   ingested_at           timestamptz default now()
 )
 
@@ -664,6 +698,8 @@ consumer_intelligence (
   source                      text not null,    -- experian
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after Experian ConsumerView contract and data inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -673,6 +709,8 @@ labor_market (
   source                      text not null,    -- lightcast
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after Lightcast contract and data inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -682,6 +720,8 @@ health_utilization (
   source                      text not null,    -- symphony health
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after Symphony Health contract and data inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -691,6 +731,8 @@ cms_claims (
   source                      text not null,    -- CMS RESDAC
   congressional_district_id   text references congressional_districts(id),
   -- TBD: all data columns after RESDAC data use agreement approval and file inspection
+  source_metadata             jsonb,
+  -- { "license": "...", "permitted_uses": [...], "attribution_required": true, ... }
   raw                         jsonb,
   ingested_at                 timestamptz default now()
 )
@@ -738,6 +780,11 @@ stakeholder_scores (
   --            protect_brand, defend_against, actively_defend_against
   movement              text,
   -- movements: improving, stable, declining
+  methodology_version   text not null,
+  -- references methodology_versions.version for this scoring_system
+  confidence_interval   numeric,
+  confidence_upper      numeric,
+  confidence_lower      numeric,
   scored_at             timestamptz default now(),
   scored_by             text,
   -- scored_by: agent, manual, import
@@ -801,6 +848,12 @@ survey_responses (
   -- enriched at submission: ACS, BLS, FEC, CDC, legislative context
   respondent_metadata   jsonb,
   -- browser, device, referrer — no PII
+  consent_version       text not null,
+  -- version of consent language the respondent saw at submission time
+  consent_text_hash     text not null,
+  -- hash of the exact consent text the respondent saw
+  age_confirmed_adult   boolean not null,
+  -- respondent confirmed eighteen or older before any question was shown
   submitted_at          timestamptz default now()
 )
 
@@ -1109,6 +1162,8 @@ mcp_queries (
   -- statuses: success, error, timeout
   duration_ms           integer,
   error_message         text,
+  claude_model_version  text not null,
+  -- exact Claude model string used to serve this query
   created_at            timestamptz default now()
 )
 
@@ -1137,6 +1192,8 @@ agent_runs (
   tokens_used           integer,
   duration_ms           integer,
   error_message         text,
+  claude_model_version  text not null,
+  -- exact Claude model string called by this agent run
   created_at            timestamptz default now()
 )
 ```
@@ -1170,6 +1227,54 @@ ingestion_errors (
   error_type            text,
   error_message         text,
   raw_record            jsonb,
+  created_at            timestamptz default now()
+)
+```
+
+---
+
+## Section 9 — Governance, Methodology, and Subject Rights
+
+```sql
+-- ─── METHODOLOGY VERSIONS ────────────────────────────────────────────────────
+-- Stores the methodology document in effect for each scoring system at any
+-- point in time. Scores reference this table through the methodology_version
+-- field on stakeholder_scores (and any future scored outputs).
+
+methodology_versions (
+  id                    uuid primary key default gen_random_uuid(),
+  scoring_system        text not null,
+  -- systems: stakeholder_sentiment, stakeholder_influence, movement_classification, etc.
+  version               text not null,
+  effective_from        timestamptz not null,
+  effective_to          timestamptz,
+  document_url          text,
+  summary               text,
+  created_at            timestamptz default now(),
+  unique(scoring_system, version)
+)
+
+-- ─── SUBJECT RIGHTS REQUESTS ─────────────────────────────────────────────────
+-- For algorithmic accountability. Scored subjects (legislators, organizations)
+-- and survey respondents can request an explanation, dispute an input, or
+-- request deletion. Required for compliance with state privacy laws and
+-- supports the platform's algorithmic accountability posture.
+
+subject_rights_requests (
+  id                    uuid primary key default gen_random_uuid(),
+  request_type          text not null,
+  -- types: explanation, dispute, deletion, access
+  subject_type          text not null,
+  -- types: stakeholder, survey_respondent
+  subject_identifier    text not null,
+  -- identifier appropriate to subject type
+  requested_at          timestamptz default now(),
+  requester_email       text,
+  description           text,
+  status                text default 'open',
+  -- statuses: open, in_review, resolved, denied
+  resolved_at           timestamptz,
+  resolution_notes      text,
   created_at            timestamptz default now()
 )
 ```

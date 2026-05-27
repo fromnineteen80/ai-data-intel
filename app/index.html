@@ -73,6 +73,62 @@
 
   .axis-h-label { font-size: 8.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #888780; line-height: 1.6; flex: 0 0 auto; white-space: nowrap; }
 
+  /* === Stakeholder Categories table === */
+  .cat-section {
+    margin-top: 16px;
+    border: 0.5px solid #b4b2a9;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+  .cat-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a18;
+    padding: 14px 16px 0 16px;
+    margin-bottom: 12px;
+  }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0;
+    border-top: 0.5px solid #e8e6df;
+  }
+  .cat-col {
+    display: flex;
+    flex-direction: column;
+    border-right: 0.5px solid #e8e6df;
+  }
+  .cat-col:last-child { border-right: none; }
+  .cat-head {
+    background: #a32d2d;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: .03em;
+    padding: 9px 12px;
+    text-align: left;
+  }
+  .cat-item {
+    font-size: 11px;
+    color: #1a1a18;
+    padding: 7px 12px;
+    border-top: 0.5px solid #f1efe8;
+    line-height: 1.35;
+  }
+  .cat-item:first-of-type { border-top: none; }
+  @media (max-width: 820px) {
+    .cat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cat-col:nth-child(3) { border-right: none; }
+    .cat-col:nth-child(-n+3) { border-bottom: 0.5px solid #e8e6df; }
+  }
+  @media (max-width: 520px) {
+    .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cat-col { border-right: 0.5px solid #e8e6df !important; border-bottom: 0.5px solid #e8e6df; }
+    .cat-col:nth-child(2n) { border-right: none !important; }
+  }
+
   /* === Mapping (top spectrum + content cards) — preserved from main site === */
   .spectrum-strip { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; margin-bottom: 8px; }
   .col-card          { border-radius: 12px; padding: 12px; background: #ffffff; }
@@ -158,6 +214,103 @@
     <div class="sub-card sub-card-stakeholder" style="border: none; padding: 0; background: transparent;">
       <div class="sub-card-title">The Public Square</div>
       <div class="sub-card-body-normal">Stakeholders, customers, and voters exist in a public square where ideas are exchanged, credibility is won or lost, and value is created, shared, or squandered. Our stakeholder or grassroots management system maps actors by sentiment, our economic exposure, their policy position, and the movement of the relationship over time.</div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- STAKEHOLDER CATEGORIES & AUDIENCE TYPES                         -->
+  <!-- ============================================================= -->
+  <div class="divider-row">
+    <div class="divider-line"></div>
+    <div class="divider-label">stakeholder categories &amp; audience types</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="cat-section">
+    <div class="cat-grid">
+
+      <div class="cat-col">
+        <div class="cat-head">Communities</div>
+        <div class="cat-item">Charity Organization</div>
+        <div class="cat-item">Church</div>
+        <div class="cat-item">Community Alliance</div>
+        <div class="cat-item">Higher Education</div>
+        <div class="cat-item">K-12 Educator</div>
+        <div class="cat-item">Local Business</div>
+        <div class="cat-item">Media</div>
+        <div class="cat-item">Military Branch</div>
+        <div class="cat-item">Neighbor</div>
+        <div class="cat-item">NGO</div>
+        <div class="cat-item">Tribes</div>
+        <div class="cat-item">Veterans</div>
+        <div class="cat-item">Youth Program</div>
+        <div class="cat-item">Activist Organization</div>
+        <div class="cat-item">Activist Member</div>
+        <div class="cat-item">General Public</div>
+      </div>
+
+      <div class="cat-col">
+        <div class="cat-head">Government</div>
+        <div class="cat-item">Agency (Inspector)</div>
+        <div class="cat-item">Agency (Permit Writer)</div>
+        <div class="cat-item">City Council Member</div>
+        <div class="cat-item">City Government</div>
+        <div class="cat-item">County Government</div>
+        <div class="cat-item">County Supervisor</div>
+        <div class="cat-item">Governor's Office</div>
+        <div class="cat-item">Judicial</div>
+        <div class="cat-item">Mayor</div>
+        <div class="cat-item">Regulator (Federal)</div>
+        <div class="cat-item">Regulator (State)</div>
+        <div class="cat-item">Regulator (Local)</div>
+        <div class="cat-item">State Representative</div>
+        <div class="cat-item">State Senate</div>
+        <div class="cat-item">US Congress</div>
+        <div class="cat-item">US Senate</div>
+      </div>
+
+      <div class="cat-col">
+        <div class="cat-head">Our People</div>
+        <div class="cat-item">Community Outreach Lead</div>
+        <div class="cat-item">Diversity &amp; Inclusion Lead</div>
+        <div class="cat-item">Executive</div>
+        <div class="cat-item">General Employee</div>
+        <div class="cat-item">Former Employee</div>
+        <div class="cat-item">Contractor</div>
+        <div class="cat-item">Operations Manager</div>
+        <div class="cat-item">Marketing Manager</div>
+        <div class="cat-item">Sales Manager</div>
+        <div class="cat-item">Retiree</div>
+      </div>
+
+      <div class="cat-col">
+        <div class="cat-head">Industry</div>
+        <div class="cat-item">Competition</div>
+        <div class="cat-item">Supply Chain</div>
+        <div class="cat-item">Trade Association</div>
+        <div class="cat-item">Channel Partners</div>
+        <div class="cat-item">Industry Analysts</div>
+        <div class="cat-item">Business Coalition</div>
+        <div class="cat-item">Economic Development</div>
+        <div class="cat-item">Labor Union</div>
+      </div>
+
+      <div class="cat-col">
+        <div class="cat-head">Consumers</div>
+        <div class="cat-item">Industry Consumers</div>
+        <div class="cat-item">Current Customers</div>
+        <div class="cat-item">Future Customers</div>
+        <div class="cat-item">Lost Customers</div>
+      </div>
+
+      <div class="cat-col">
+        <div class="cat-head">Investors</div>
+        <div class="cat-item">Board Member</div>
+        <div class="cat-item">Shareholder</div>
+        <div class="cat-item">Activist Shareholder</div>
+        <div class="cat-item">General Public Investor</div>
+      </div>
+
     </div>
   </div>
 

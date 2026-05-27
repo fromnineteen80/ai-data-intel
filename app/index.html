@@ -2,17 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="theme-color" content="#f5f4f0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="GA&amp;PP">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Track, rank, and evaluate stakeholders for Government Affairs and Public Policy teams.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1a18'/%3E%3Ctext x='32' y='42' font-family='-apple-system,sans-serif' font-size='28' font-weight='600' fill='%23ffffff' text-anchor='middle'%3EGA%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a18'/%3E%3Ctext x='90' y='118' font-family='-apple-system,sans-serif' font-size='78' font-weight='600' fill='%23ffffff' text-anchor='middle'%3EGA%3C/text%3E%3C/svg%3E">
 <title>GA&amp;PP Stakeholders</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     background: #f5f4f0;
     color: #1a1a18;
     padding: 2rem;
+    padding-top: max(2rem, env(safe-area-inset-top));
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
     line-height: 1.5;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
   }
   .pipeline { max-width: 1050px; margin: 0 auto; }
   .page-title {
@@ -393,14 +408,265 @@
     font-size: 11px; color: #a32d2d; margin-top: 4px;
   }
 
+  /* === Polish: touch targets, inputs, search === */
+  .btn {
+    min-height: 38px;
+  }
+  .btn-sm { min-height: 28px; }
+  .link-btn {
+    min-height: 32px;
+    padding: 6px 4px;
+  }
+  .field-input, .field-select, .field-textarea {
+    font-size: 16px;          /* prevents iOS zoom on focus */
+    padding: 10px 12px;
+    min-height: 42px;
+  }
+  .field-textarea { min-height: 72px; }
+  .chip {
+    min-height: 32px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .chip:active { transform: scale(0.97); }
+
+  /* X handle input with @ prefix */
+  .input-with-prefix {
+    position: relative;
+    display: flex; align-items: stretch;
+    border: 0.5px solid #b4b2a9;
+    border-radius: 7px;
+    background: #f9f8f4;
+    overflow: hidden;
+  }
+  .input-with-prefix:focus-within {
+    border-color: #5f5e5a;
+    background: #ffffff;
+  }
+  .input-prefix {
+    display: flex; align-items: center;
+    padding: 0 12px;
+    font-size: 16px; color: #888780;
+    background: transparent;
+    border-right: 0.5px solid #e8e6df;
+    flex-shrink: 0;
+  }
+  .input-with-prefix input {
+    flex: 1; width: 100%;
+    border: none; outline: none;
+    background: transparent;
+    font-size: 16px;
+    padding: 10px 12px;
+    color: #1a1a18;
+    font-family: inherit;
+  }
+
+  /* Side pane search + filter */
+  .side-search-wrap {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .side-search {
+    width: 100%;
+    padding: 9px 12px 9px 34px;
+    border: 0.5px solid #b4b2a9;
+    border-radius: 8px;
+    background: #f9f8f4;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a1a18;
+    outline: none;
+    min-height: 38px;
+  }
+  .side-search:focus { background: #ffffff; border-color: #5f5e5a; }
+  .side-search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: #888780; pointer-events: none;
+  }
+  .side-filters {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    margin-bottom: 10px;
+  }
+  .filter-chip {
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #5f5e5a;
+    cursor: pointer;
+    min-height: 26px;
+    display: inline-flex; align-items: center;
+    user-select: none;
+  }
+  .filter-chip.active {
+    background: #1a1a18;
+    color: #ffffff;
+    border-color: #1a1a18;
+  }
+
+  /* Avatar / initials */
+  .sh-card { gap: 6px; }
+  .sh-row1 { gap: 10px; }
+  .sh-head {
+    display: flex; align-items: center; gap: 10px;
+    flex: 1; min-width: 0;
+  }
+  .sh-avatar {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #1a1a18;
+    color: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .02em;
+  }
+  .sh-avatar-Communities { background: #5f5e5a; }
+  .sh-avatar-Government  { background: #a32d2d; }
+  .sh-avatar-OurPeople   { background: #2a5010; }
+  .sh-avatar-Industry    { background: #854f0b; }
+  .sh-avatar-Consumers   { background: #185fa5; }
+  .sh-avatar-Investors   { background: #1a1a18; }
+  .sh-name-wrap { flex: 1; min-width: 0; }
+  .sh-name { font-size: 13px; font-weight: 500; }
+  .sh-sub-inline {
+    font-size: 11px; color: #888780;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    background: #1a1a18;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Modal: sticky header & footer; bottom-sheet on mobile */
+  .modal {
+    padding: 0;
+    overflow: hidden;
+    max-height: calc(100vh - 80px);
+    display: flex; flex-direction: column;
+  }
+  .modal-header {
+    padding: 20px 28px 16px 28px;
+    border-bottom: 0.5px solid #e8e6df;
+    background: #ffffff;
+    position: sticky; top: 0; z-index: 2;
+  }
+  .modal-header-row {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .modal-close {
+    background: #f1efe8;
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 18px; line-height: 1;
+    color: #5f5e5a;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { background: #e8e6df; }
+  .modal-body {
+    padding: 20px 28px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+  }
+  .modal-footer {
+    padding: 14px 28px calc(14px + env(safe-area-inset-bottom)) 28px;
+    border-top: 0.5px solid #e8e6df;
+    background: #ffffff;
+    display: flex; justify-content: flex-end; gap: 8px;
+    position: sticky; bottom: 0;
+  }
+
   @media (max-width: 600px) {
+    body {
+      padding: 1rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    .app-name { font-size: 20px; }
     .form-grid { grid-template-columns: 1fr; }
-    .topbar { flex-direction: column; align-items: stretch; }
-    .topbar-left, .topbar-right { justify-content: space-between; }
+    .topbar { flex-direction: row; align-items: center; }
+    .topbar-right { flex-direction: row; gap: 8px; }
+    .topbar-left { min-width: 0; flex: 1; }
+    .who-chip {
+      min-width: 0;
+      overflow: hidden;
+      max-width: 100%;
+    }
+    #who-name {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      min-width: 0;
+    }
+
+    /* Bottom-sheet style modal */
+    .modal-backdrop {
+      align-items: flex-end;
+      padding: 0;
+    }
+    .modal {
+      max-width: 100%;
+      max-height: 92vh;
+      border-radius: 18px 18px 0 0;
+      border-left: none; border-right: none; border-bottom: none;
+      animation: slideUp .25s ease-out;
+    }
+    .modal-sm {
+      max-width: 100%;
+      align-self: flex-end;
+    }
+    .modal-header { padding: 16px 20px 12px 20px; }
+    .modal-body { padding: 16px 20px; }
+    .modal-footer { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px; }
+    .modal-title { font-size: 17px; }
+
+    /* Grab handle bar at top of mobile sheet */
+    .modal::before {
+      content: '';
+      display: block;
+      width: 36px; height: 4px;
+      background: #d3d1c7;
+      border-radius: 999px;
+      margin: 8px auto 0 auto;
+    }
+
+    .map-pane, .side-pane { padding: 12px; }
+    .stakeholder-list { max-height: none; }
   }
 
   @media (max-width: 820px) {
     .map-row { grid-template-columns: 1fr; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* Larger desktop breakpoint polish */
+  @media (min-width: 821px) {
+    .stakeholder-list { max-height: 560px; }
   }
 </style>
 </head>
@@ -793,6 +1059,23 @@
         <div class="pane-label" style="margin-bottom: 0;">Stakeholders</div>
         <div class="side-count" id="sh-count">0 saved</div>
       </div>
+      <div class="side-search-wrap">
+        <span class="side-search-icon material-symbols-outlined" style="font-size: 18px;">search</span>
+        <input id="sh-search" class="side-search" type="search"
+               placeholder="Search by name, org, issue…"
+               autocapitalize="none" autocorrect="off"
+               oninput="onSearchChange()" />
+      </div>
+      <div id="sh-filters" class="side-filters">
+        <span class="filter-chip active" data-filter="all" onclick="pickFilter(this,'all')">All</span>
+        <span class="filter-chip" data-filter="mine" onclick="pickFilter(this,'mine')">Mine</span>
+        <span class="filter-chip" data-filter="Communities" onclick="pickFilter(this,'Communities')">Communities</span>
+        <span class="filter-chip" data-filter="Government"  onclick="pickFilter(this,'Government')">Government</span>
+        <span class="filter-chip" data-filter="Our People"  onclick="pickFilter(this,'Our People')">Our People</span>
+        <span class="filter-chip" data-filter="Industry"    onclick="pickFilter(this,'Industry')">Industry</span>
+        <span class="filter-chip" data-filter="Consumers"   onclick="pickFilter(this,'Consumers')">Consumers</span>
+        <span class="filter-chip" data-filter="Investors"   onclick="pickFilter(this,'Investors')">Investors</span>
+      </div>
       <div id="sh-list" class="stakeholder-list"></div>
     </div>
 
@@ -805,28 +1088,37 @@
 <!-- =================================================================== -->
 <div id="signin-modal" class="modal-backdrop">
   <div class="modal modal-sm">
-    <div>
-      <div class="modal-sub">Sign in</div>
-      <div class="modal-title">Welcome to GA&amp;PP Stakeholders</div>
-    </div>
-    <div>
-      <label class="field-label" for="signin-name">Your Name</label>
-      <input id="signin-name" class="field-input" type="text" placeholder="First Last" autocomplete="name" />
-    </div>
-    <div>
-      <label class="field-label">Role</label>
-      <div class="chip-group">
-        <span class="chip active" data-role="User" onclick="pickRole(this,'User')">User</span>
-        <span class="chip" data-role="Manager" onclick="pickRole(this,'Manager')">Manager</span>
-      </div>
-      <div style="font-size: 10.5px; color: #888780; margin-top: 8px; line-height: 1.5;">
-        Users add, edit, and delete their own stakeholders.
-        Managers can add, edit, and delete any stakeholder.
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-sub">Sign in</div>
+          <div class="modal-title">Welcome to GA&amp;PP Stakeholders</div>
+        </div>
       </div>
     </div>
-    <div id="signin-error" class="field-error" style="display: none;">Please enter your name.</div>
-    <div class="modal-actions">
-      <button class="btn" onclick="completeSignin()">Continue</button>
+    <div class="modal-body">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label class="field-label" for="signin-name">Your Name</label>
+          <input id="signin-name" class="field-input" type="text" placeholder="First Last"
+                 autocomplete="name" autocapitalize="words" enterkeyhint="next" />
+        </div>
+        <div>
+          <label class="field-label">Role</label>
+          <div class="chip-group">
+            <span class="chip active" data-role="User" onclick="pickRole(this,'User')">User</span>
+            <span class="chip" data-role="Manager" onclick="pickRole(this,'Manager')">Manager</span>
+          </div>
+          <div style="font-size: 11px; color: #888780; margin-top: 10px; line-height: 1.5;">
+            <strong style="color:#5f5e5a; font-weight: 500;">Users</strong> add, edit, and delete their own stakeholders.<br>
+            <strong style="color:#5f5e5a; font-weight: 500;">Managers</strong> can add, edit, and delete any stakeholder.
+          </div>
+        </div>
+        <div id="signin-error" class="field-error" style="display: none;">Please enter your name.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="completeSignin()" style="flex: 1;">Continue</button>
     </div>
   </div>
 </div>
@@ -836,12 +1128,17 @@
 <!-- =================================================================== -->
 <div id="form-modal" class="modal-backdrop">
   <div class="modal">
-    <div>
-      <div class="modal-sub" id="form-mode-label">Add stakeholder</div>
-      <div class="modal-title">Stakeholder Card</div>
+    <form id="sh-form" onsubmit="event.preventDefault(); saveStakeholder();" style="display: contents;">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-sub" id="form-mode-label">Add stakeholder</div>
+          <div class="modal-title">Stakeholder Card</div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeFormModal()" aria-label="Close">×</button>
+      </div>
     </div>
-
-    <form id="sh-form" onsubmit="event.preventDefault(); saveStakeholder();">
+    <div class="modal-body">
       <div class="form-grid">
 
         <div>
@@ -859,29 +1156,37 @@
 
         <div>
           <label class="field-label" for="f-first">First Name</label>
-          <input id="f-first" class="field-input" type="text" />
+          <input id="f-first" class="field-input" type="text"
+                 autocapitalize="words" autocomplete="given-name" enterkeyhint="next" />
         </div>
         <div>
           <label class="field-label" for="f-last">Last Name</label>
-          <input id="f-last" class="field-input" type="text" />
+          <input id="f-last" class="field-input" type="text"
+                 autocapitalize="words" autocomplete="family-name" enterkeyhint="next" />
         </div>
 
         <div>
           <label class="field-label" for="f-org">Organization <span class="opt">optional</span></label>
-          <input id="f-org" class="field-input" type="text" />
+          <input id="f-org" class="field-input" type="text"
+                 autocapitalize="words" autocomplete="organization" />
         </div>
         <div>
           <label class="field-label" for="f-website">Website <span class="opt">optional</span></label>
-          <input id="f-website" class="field-input" type="url" placeholder="https://" />
+          <input id="f-website" class="field-input" type="url" placeholder="https://"
+                 autocomplete="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" />
         </div>
 
         <div>
           <label class="field-label" for="f-xhandle">Organization X Account <span class="opt">optional</span></label>
-          <input id="f-xhandle" class="field-input" type="text" placeholder="@handle" />
+          <div class="input-with-prefix">
+            <div class="input-prefix">@</div>
+            <input id="f-xhandle" type="text" placeholder="handle" autocapitalize="none" autocorrect="off" spellcheck="false" />
+          </div>
         </div>
         <div>
           <label class="field-label">Scope <span class="opt">optional</span></label>
           <div id="f-scope" class="chip-group">
+            <span class="chip" data-scope="Local"    onclick="pickScope(this,'Local')">Local</span>
             <span class="chip" data-scope="State"    onclick="pickScope(this,'State')">State</span>
             <span class="chip" data-scope="Federal"  onclick="pickScope(this,'Federal')">Federal</span>
             <span class="chip" data-scope="National" onclick="pickScope(this,'National')">National</span>
@@ -906,23 +1211,27 @@
         </div>
         <div class="form-row-full">
           <label class="field-label" for="f-street">Street</label>
-          <input id="f-street" class="field-input" type="text" />
+          <input id="f-street" class="field-input" type="text"
+                 autocapitalize="words" autocomplete="street-address" />
         </div>
         <div>
           <label class="field-label" for="f-city">City</label>
-          <input id="f-city" class="field-input" type="text" />
+          <input id="f-city" class="field-input" type="text"
+                 autocapitalize="words" autocomplete="address-level2" />
         </div>
         <div>
           <label class="field-label" for="f-addr-state">State</label>
-          <select id="f-addr-state" class="field-select"></select>
+          <select id="f-addr-state" class="field-select" autocomplete="address-level1"></select>
         </div>
         <div>
           <label class="field-label" for="f-zip">ZIP</label>
-          <input id="f-zip" class="field-input" type="text" />
+          <input id="f-zip" class="field-input" type="text"
+                 inputmode="numeric" autocomplete="postal-code" maxlength="10" />
         </div>
         <div>
           <label class="field-label" for="f-country">Country</label>
-          <input id="f-country" class="field-input" type="text" value="United States" />
+          <input id="f-country" class="field-input" type="text" value="United States"
+                 autocapitalize="words" autocomplete="country-name" />
         </div>
 
         <!-- ISSUES -->
@@ -941,16 +1250,17 @@
         </div>
 
       </div>
-
-      <div id="form-error" class="field-error" style="display: none;"></div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeFormModal()">Cancel</button>
-        <button type="submit" class="btn" id="form-submit">Save</button>
-      </div>
+      <div id="form-error" class="field-error" style="display: none; margin-top: 10px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeFormModal()">Cancel</button>
+      <button type="submit" class="btn" id="form-submit">Save</button>
+    </div>
     </form>
   </div>
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 /* =====================================================================
@@ -996,12 +1306,26 @@ const ISSUES = [
   'Future of Work','Taxation','Site Specific Issues'
 ];
 
+/* US states: [abbr, full name] — abbr stored as value, full name in label */
 const US_STATES = [
-  '','AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN',
-  'IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
-  'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA',
-  'WA','WV','WI','WY','PR','GU','VI','AS','MP'
+  ['',''],
+  ['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],
+  ['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],
+  ['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],
+  ['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],
+  ['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],
+  ['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],
+  ['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],
+  ['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],
+  ['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],
+  ['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],
+  ['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],
+  ['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],
+  ['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming'],
+  ['PR','Puerto Rico'],['GU','Guam'],['VI','U.S. Virgin Islands'],
+  ['AS','American Samoa'],['MP','Northern Mariana Islands']
 ];
+const US_STATE_VALUES = US_STATES.map(s => s[0]);
 
 const PARTIES = ['','Democrat','Republican','Independent','Nonpartisan','Other'];
 
@@ -1034,7 +1358,7 @@ const GOV_FIELD_DEFS = {
   city:              { label: 'City',             type: 'text' },
   county:            { label: 'County',           type: 'text' },
   locality:          { label: 'Locality',         type: 'text' },
-  state:             { label: 'State',            type: 'select', options: US_STATES },
+  state:             { label: 'State',            type: 'select', options: US_STATES, isStateTuples: true },
   district:          { label: 'District',         type: 'text' },
   party:             { label: 'Party',            type: 'select', options: PARTIES },
   jurisdictionLevel: { label: 'Jurisdiction',     type: 'select', options: ['','Federal','State','Local'] },
@@ -1087,6 +1411,8 @@ let editingId = null;
 let selectedScope = null;
 let selectedIssues = new Set();
 let selectedSigninRole = 'User';
+let listFilter = 'all';
+let listSearch = '';
 
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
@@ -1098,11 +1424,12 @@ document.addEventListener('DOMContentLoaded', () => {
     cat.appendChild(opt);
   });
 
-  // Populate address state dropdown
+  // Populate address state dropdown (full names)
   const addrState = document.getElementById('f-addr-state');
-  US_STATES.forEach(s => {
+  US_STATES.forEach(([abbr, name]) => {
     const opt = document.createElement('option');
-    opt.value = s; opt.textContent = s || '— Select —';
+    opt.value = abbr;
+    opt.textContent = abbr ? `${name} (${abbr})` : '— Select —';
     addrState.appendChild(opt);
   });
 
@@ -1125,7 +1452,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-signout').style.display = '';
   } else {
     document.getElementById('signin-modal').classList.add('open');
+    setTimeout(() => document.getElementById('signin-name').focus(), 150);
   }
+
+  // Press ESC to close open modals (except sign-in if no user)
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const fm = document.getElementById('form-modal');
+    if (fm.classList.contains('open')) { closeFormModal(); return; }
+  });
+
+  // Click backdrop to close form modal
+  document.getElementById('form-modal').addEventListener('click', e => {
+    if (e.target.id === 'form-modal') closeFormModal();
+  });
+
+  // Submit signin on Enter inside name field
+  document.getElementById('signin-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); completeSignin(); }
+  });
 
   renderList();
 });
@@ -1179,6 +1524,8 @@ function openAddModal() {
   document.getElementById('form-mode-label').textContent = 'Add stakeholder';
   document.getElementById('form-submit').textContent = 'Save';
   document.getElementById('form-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('f-category').focus(), 150);
 }
 
 function openEditModal(id) {
@@ -1189,10 +1536,12 @@ function openEditModal(id) {
   document.getElementById('form-mode-label').textContent = 'Edit stakeholder';
   document.getElementById('form-submit').textContent = 'Update';
   document.getElementById('form-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeFormModal() {
   document.getElementById('form-modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function resetForm() {
@@ -1296,13 +1645,21 @@ function onAudienceChange() {
       input.className = 'field-select';
       def.options.forEach(o => {
         const opt = document.createElement('option');
-        opt.value = o; opt.textContent = o || '— Select —';
+        if (def.isStateTuples) {
+          opt.value = o[0];
+          opt.textContent = o[0] ? `${o[1]} (${o[0]})` : '— Select —';
+        } else {
+          opt.value = o;
+          opt.textContent = o || '— Select —';
+        }
         input.appendChild(opt);
       });
     } else {
       input = document.createElement('input');
       input.className = 'field-input';
       input.type = 'text';
+      if (key === 'state') input.setAttribute('autocapitalize', 'characters');
+      else input.setAttribute('autocapitalize', 'words');
     }
     input.id = 'gov-' + key;
     wrap.appendChild(input);
@@ -1373,7 +1730,7 @@ function saveStakeholder() {
     lastName,
     organization: document.getElementById('f-org').value.trim(),
     website:      document.getElementById('f-website').value.trim(),
-    xHandle:      document.getElementById('f-xhandle').value.trim(),
+    xHandle:      document.getElementById('f-xhandle').value.trim().replace(/^@+/, ''),
     scope:        selectedScope,
     issues:       Array.from(selectedIssues),
     address: {
@@ -1392,30 +1749,58 @@ function saveStakeholder() {
   };
 
   Store.upsert(record);
+  const wasNew = !editingId;
   closeFormModal();
   renderList();
+  showToast(wasNew ? `Added ${record.firstName} ${record.lastName}` : `Updated ${record.firstName} ${record.lastName}`);
 }
 
 /* ---------- Render list ---------- */
 function renderList() {
-  const list = Store.list();
+  const all = Store.list();
   const user = Store.getCurrentUser();
   const box = document.getElementById('sh-list');
   const count = document.getElementById('sh-count');
-  count.textContent = list.length + (list.length === 1 ? ' saved' : ' saved');
+
+  // Apply filter & search
+  let filtered = all;
+  if (listFilter === 'mine' && user) {
+    filtered = filtered.filter(s => s.ownerId === user.id);
+  } else if (listFilter !== 'all' && listFilter !== 'mine') {
+    filtered = filtered.filter(s => s.category === listFilter);
+  }
+  if (listSearch) {
+    filtered = filtered.filter(s => {
+      const haystack = [
+        s.firstName, s.lastName, s.organization, s.audienceType, s.category,
+        s.gov?.office, s.gov?.agency, s.gov?.title, s.gov?.city, s.gov?.county,
+        s.gov?.locality, s.gov?.state, s.gov?.party, s.address?.city, s.address?.state,
+        (s.issues || []).join(' '), s.notes, s.xHandle
+      ].join(' ').toLowerCase();
+      return haystack.includes(listSearch);
+    });
+  }
+
+  count.textContent = filtered.length === all.length
+    ? `${all.length} saved`
+    : `${filtered.length} of ${all.length}`;
 
   box.innerHTML = '';
-  if (!list.length) {
+  if (!filtered.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-list';
-    empty.innerHTML = user
-      ? 'No stakeholders yet.<br>Click <strong>+ Add Stakeholder</strong> to create one.'
-      : 'Sign in to add stakeholders.';
+    if (!user) {
+      empty.innerHTML = 'Sign in to add stakeholders.';
+    } else if (!all.length) {
+      empty.innerHTML = 'No stakeholders yet.<br>Tap <strong>+ Add Stakeholder</strong> to create one.';
+    } else {
+      empty.innerHTML = 'No matches.<br>Try a different search or filter.';
+    }
     box.appendChild(empty);
     return;
   }
 
-  list
+  filtered
     .slice()
     .sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0))
     .forEach(sh => {
@@ -1424,10 +1809,11 @@ function renderList() {
       card.className = 'sh-card';
 
       const subBits = [];
-      if (sh.organization) subBits.push(sh.organization);
-      if (sh.gov?.title)   subBits.push(sh.gov.title);
-      if (sh.gov?.office)  subBits.push(sh.gov.office);
-      if (sh.gov?.agency)  subBits.push(sh.gov.agency);
+      if (sh.organization)        subBits.push(sh.organization);
+      else if (sh.gov?.office)    subBits.push(sh.gov.office);
+      else if (sh.gov?.agency)    subBits.push(sh.gov.agency);
+      else if (sh.gov?.court)     subBits.push(sh.gov.court);
+      if (sh.gov?.title && subBits.length < 2) subBits.push(sh.gov.title);
 
       const metaBits = [];
       if (sh.gov?.state || sh.address?.state) metaBits.push(sh.gov?.state || sh.address.state);
@@ -1437,10 +1823,15 @@ function renderList() {
 
       card.innerHTML = `
         <div class="sh-row1">
-          <div class="sh-name">${escape(sh.firstName)} ${escape(sh.lastName)}</div>
+          <div class="sh-head">
+            <div class="sh-avatar ${getCategoryAvatarClass(sh.category)}">${escape(getInitials(sh))}</div>
+            <div class="sh-name-wrap">
+              <div class="sh-name">${escape(sh.firstName)} ${escape(sh.lastName)}</div>
+              ${subBits.length ? `<div class="sh-sub-inline">${subBits.map(escape).join(' · ')}</div>` : ''}
+            </div>
+          </div>
           <div class="sh-cat">${escape(sh.audienceType)}</div>
         </div>
-        ${subBits.length ? `<div class="sh-sub">${subBits.map(escape).join(' · ')}</div>` : ''}
         ${metaBits.length ? `<div class="sh-meta">${metaBits.map(escape).join(' · ')}</div>` : ''}
         ${sh.issues?.length ? `<div class="sh-issues">${sh.issues.map(i => `<span class="sh-issue-tag">${escape(i)}</span>`).join('')}</div>` : ''}
         <div class="sh-owner">Added by ${escape(sh.ownerName || 'unknown')}</div>
@@ -1460,6 +1851,40 @@ function deleteStakeholder(id) {
   if (!confirm(`Delete ${sh.firstName} ${sh.lastName}?`)) return;
   Store.remove(id);
   renderList();
+  showToast(`Deleted ${sh.firstName} ${sh.lastName}`);
+}
+
+/* ---------- Toast ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- Search / filter ---------- */
+function onSearchChange() {
+  listSearch = document.getElementById('sh-search').value.trim().toLowerCase();
+  renderList();
+}
+
+function pickFilter(el, filter) {
+  document.querySelectorAll('#sh-filters [data-filter]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  listFilter = filter;
+  renderList();
+}
+
+function getCategoryAvatarClass(cat) {
+  return 'sh-avatar-' + (cat || '').replace(/\s+/g, '');
+}
+
+function getInitials(sh) {
+  const a = (sh.firstName || '').trim()[0] || '';
+  const b = (sh.lastName  || '').trim()[0] || '';
+  return (a + b).toUpperCase() || '?';
 }
 
 /* ---------- Helpers ---------- */
